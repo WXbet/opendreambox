@@ -17,6 +17,8 @@ SRC_URI[sha256sum] = "344d0a79f1a9b08029b0744e2cc401a43f9c90acd1044d09a530b4885a
 
 inherit perlnative
 
+RPROVIDES_${PN} = "libcrypto3 libssl3"
+
 PACKAGECONFIG[cryptodev-linux] = "enable-devcryptoeng,disable-devcryptoeng,cryptodev-linux,cryptodev-module"
 PACKAGECONFIG[no-tls1] = "no-tls1"
 PACKAGECONFIG[no-tls1_1] = "no-tls1_1"
