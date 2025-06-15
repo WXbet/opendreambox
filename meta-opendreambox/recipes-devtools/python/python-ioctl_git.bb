@@ -7,7 +7,9 @@ SRCREV = "1f090606fb5b68cd4cd98a3eb18fd4a571fc931c"
 PV = "0.0.2+git${SRCPV}"
 DEPENDS = "python-setuptools-scm-native"
 
-SRC_URI = "git://github.com/olavmrk/python-ioctl"
+SRC_URI = "git://github.com/olavmrk/python-ioctl;protocol=https;branch=master \
+          file://fix-setuptools-scm-error.patch \
+"
 
 S = "${WORKDIR}/git"
 

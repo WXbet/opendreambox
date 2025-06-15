@@ -1,3 +1,4 @@
+LICENSE = "CLOSED"
 SUMMARY = "dreambox video and audio sink elements for Gstreamer 1.0"
 DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base openssl"
 
@@ -6,6 +7,8 @@ SRC_URI[cortexa15hf-neon-vfpv4.sha256sum] = "51f04c3e76928634c22d8a55d3c44f934c8
 SRC_URI[mips32el.md5sum] = "7f008aef90b91d9762a818bcb7af2467"
 SRC_URI[mips32el.sha256sum] = "041cec5fc17d31d0200cf5758524a7b651a6699cafc70eda1ccedbaf11ab71de"
 
-inherit opendreambox-precompiled-binary
+SRC_URI += "file://${PN}_${PV}_${PACKAGE_ARCH}.tar.xz"
+
+#inherit opendreambox-precompiled-binary
 
 FILES_${PN} = "${libdir}/gstreamer-1.0/*.so"

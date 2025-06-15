@@ -1,4 +1,4 @@
-LIC_FILES_CHKSUM = "file://usr/share/doc/enigma2/LICENSE;md5=b7af6701c3fc2185e1ee44e9b94dff63"
+LIC_FILES_CHKSUM = "file://etc/default/enigma2;md5=4ec41c7a12d97d6164a2607413764b8b"
 
 DEPENDS += " \
     boost \
@@ -33,7 +33,9 @@ DEPENDS += " \
     zlib \
 "
 
-inherit opendreambox-precompiled-binary
+SRC_URI += "file://${PN}_${PV}_${PACKAGE_ARCH}.tar.xz;subdir=${P}"
+
+#inherit opendreambox-precompiled-binary
 
 RDEPENDS_${PN} += " \
     libegl \

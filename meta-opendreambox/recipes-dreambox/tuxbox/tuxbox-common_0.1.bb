@@ -14,4 +14,4 @@ do_install() {
 
 FILES_${PN} = "${sysconfdir}"
 
-OPENDREAMBOX_PROJECT = "obi/enigma2-xml-data"
+OPENDREAMBOX_PROJECT = "enigma2-xml-data"
