@@ -1,0 +1,7 @@
+[account]
+user                          = relay
+
+[account]
+user                          = dvbapi
+au                            = 1
+group                         = 1

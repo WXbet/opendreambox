@@ -1,0 +1,24 @@
+[Unit]
+Description=${DESC}
+Requires=dev-dvb-adapter0-ca0.device dev-dvb-adapter0-demux0.device dev-sci0.device network-online.target
+After=dev-dvb-adapter0-ca0.device
+After=dev-dvb-adapter0-demux0.device
+After=dev-sci0.device
+After=network-online.target
+
+[Service]
+Type=forking
+RuntimeDirectory=${BIN}
+RuntimeDirectoryMode=0755
+PIDFile=/var/run/${BIN}.pid
+ExecStart=${bindir}/${BIN} --daemon --restart 2 --config-dir ${CONF} --pidfile /var/run/${BIN}.pid
+ExecStop=${bindir}/rm /var/run/${BIN}.pid
+TimeoutStopSec=1
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+NotifyAccess=main
+NonBlocking=true
+
+[Install]
+WantedBy=multi-user.target
