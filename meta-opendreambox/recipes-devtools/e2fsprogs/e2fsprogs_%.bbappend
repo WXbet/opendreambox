@@ -1,3 +1,7 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
+
+SRC_URI += "file://rename-copy_file_range.patch"
+
 do_install_append () {
 	for i in ext2 ext3 ext4 ext4dev; do
 		ln -sf e2fsck ${D}${base_sbindir}/fsck.${i}
