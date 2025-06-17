@@ -1,7 +1,7 @@
-SUMMARY_${PN}_append = " (IPv6/IPv4 Dual-Stack support)"
+SUMMARY_${PN}_append = " (IPv4/IPv6 Dual-Stack support)"
 
 DESCRIPTION_${PN} += "\n \
-- IPv6 support\nThis version can connect to servers using IPv6 and/or IPv4."
+- IPv6 support\nThis version can connect to servers using IPv4 and/or IPv6."
 
 RPROVIDES_${PN}  += "${OSCAMNAME}"
 

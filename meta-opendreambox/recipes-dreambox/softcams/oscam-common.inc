@@ -9,8 +9,8 @@ do_configure_prepend () {
 
 inherit cmake
 
-SRC_URI += " \
-            file://oscam.service.template \
+SRC_URI += "file://fix-cmake-stat.not-found.patch \
+            file://oscam.service \
             file://${OSCAMNAME}/ \
 "
 

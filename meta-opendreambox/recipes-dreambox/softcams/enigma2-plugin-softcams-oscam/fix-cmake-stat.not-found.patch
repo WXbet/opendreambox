@@ -1,0 +1,16 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4b08cfc0..07bd42b7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -220,9 +220,9 @@ endif (NOT USE_COMPRESS OR USE_COMPRESS EQUAL 0)
+ 
+ # binary signing
+ find_program(STAT NAMES gnustat)
+-find_program(STAT NAMES stat)
++set (STAT "stat")
+ find_program(SPLIT NAMES gsplit)
+-find_program(SPLIT NAMES split)
++set (SPLIT "split")
+ execute_process (COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/config.sh --enabled WITH_SIGNING OUTPUT_VARIABLE CONFIG_WITH_SIGNING OUTPUT_STRIP_TRAILING_WHITESPACE)
+ if (CONFIG_WITH_SIGNING MATCHES "N" AND WITH_SIGNING EQUAL 1)
+ 	message (STATUS "SIGNING is added by You compiling with signing included")
