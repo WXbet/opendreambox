@@ -33,9 +33,7 @@ DEPENDS += " \
     zlib \
 "
 
-SRC_URI += "file://${PN}_${PV}_${PACKAGE_ARCH}.tar.xz;subdir=${P}"
-
-#inherit opendreambox-precompiled-binary
+inherit opendreambox-precompiled-binary
 
 RDEPENDS_${PN} += " \
     libegl \
