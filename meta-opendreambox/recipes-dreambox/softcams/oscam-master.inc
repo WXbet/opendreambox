@@ -1,3 +1,9 @@
+OSCAMTPL = "oscam-master"
+
+OSCAMNAME ?= "oscam-master"
+OSCAMCONF ?= "${sysconfdir}/tuxbox/config"
+OSCAMPORT ?= "8888"
+
 require oscam-common.inc
 
 S = "${WORKDIR}/git"

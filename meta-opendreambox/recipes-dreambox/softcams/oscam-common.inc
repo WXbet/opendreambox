@@ -1,5 +1,5 @@
 FILESEXTRAPATHS_prepend := "${THISDIR}/enigma2-plugin-softcams-oscam:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/enigma2-plugin-softcams-oscam/${OSCAMNAME}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/enigma2-plugin-softcams-oscam/${OSCAMTPL}:"
 
 CONFFILES_${PN} ?= "${OSCAMCONF}"
 
@@ -11,7 +11,7 @@ inherit cmake
 
 SRC_URI += "file://fix-cmake-stat.not-found.patch \
             file://oscam.service \
-            file://${OSCAMNAME}/ \
+            file://${OSCAMTPL}/ \
 "
 
 LICENSE = "GPL-3.0"
@@ -41,8 +41,12 @@ EXTRA_OECMAKE += "\
 do_install () {
 	install -d ${D}/${bindir}
 	install -m 0755 ${B}/oscam${BINSUFFIX} ${D}${bindir}/${OSCAMNAME}
+
 	install -d ${D}/${OSCAMCONF}
-	[ -e ${WORKDIR}/${OSCAMNAME} ] && install -m 0644 ${WORKDIR}/${OSCAMNAME}/* ${D}/${OSCAMCONF} || true
+	install -m 0644 ${WORKDIR}/${OSCAMTPL}/* ${D}/${OSCAMCONF}
+
+	install -d ${D}${systemd_system_unitdir}
+	install -m 644 ${WORKDIR}/oscam.service ${D}${systemd_system_unitdir}
 }
 
 require softcam-build.inc

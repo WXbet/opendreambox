@@ -1,6 +1,3 @@
-OSCAMNAME ?= "oscam-master"
-OSCAMCONF ?= "${sysconfdir}/tuxbox/config"
-OSCAMPORT ?= "8888"
 BINSUFFIX = "-upx"
 
 inherit git-project
@@ -9,7 +6,7 @@ SRCREV = "${AUTOREV}"
 PV = "2.2x+git"
 SRC_URI += "git://git.streamboard.tv/common/oscam.git;protocol=https;branch=master"
 
-SUMMARY_${PN} = "OSCam-master ${PKGV}"
+SUMMARY_${PN} = "${OSCAMNAME} ${PKGV}"
 DESCRIPTION_${PN} = "OSCam Open Source Softcam\n \
 - latest master"
 
