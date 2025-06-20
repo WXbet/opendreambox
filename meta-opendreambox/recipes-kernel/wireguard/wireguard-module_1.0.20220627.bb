@@ -37,6 +37,8 @@ RDEPENDS_kernel-module-${MODULE_NAME}-${KERNEL_VERSION}_remove = "kernel-module-
 RRECOMMENDS_kernel-module-${MODULE_NAME}-${KERNEL_VERSION}_append = "${@"" if bb.utils.vercmp_string_op('${PREFERRED_VERSION_${PREFERRED_PROVIDER_virtual/kernel}}', '3.18', '<') \
                                                                            else "kernel-module-ip6-udp-tunnel-${KERNEL_VERSION} kernel-module-udp-tunnel-${KERNEL_VERSION}"}"
 
+PROVIDES = "${PKG}"
+RPROVIDES_${PN} = "${PKG}"
 
 module_do_install() {
     install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/kernel/${MODULE_NAME}

@@ -14,6 +14,8 @@ RDEPENDS_${PN} += " \
   tzdata \
   tzdata-europe \
   xfsprogs-mkfs \
+  kernel-module-wireguard \
+  wireguard-tools \
 "
 
 RRECOMMENDS_${PN} += " \
