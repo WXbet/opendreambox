@@ -36,14 +36,16 @@ EXTRA_OECMAKE += "\
 	-DMODULE_STREAMRELAY=1 \
 	-DHAVE_LIBDVBCSA=1 \
 	${@bb.utils.contains_any("TUNE_FEATURES", "neon simd", "-DWITH_ARM_NEON=1", "", d)} \
+	${OSCAMOPTS} \
 "
 
 do_install () {
-	install -d ${D}/${bindir}
-	install -m 0755 ${B}/oscam${BINSUFFIX} ${D}${bindir}/${OSCAMNAME}
+	install -d ${D}${bindir}
+	find ${B} -maxdepth 1 -name oscam* -type f -exec \
+	install -m 0755 {} ${D}${bindir}/${OSCAMNAME} \; -quit
 
-	install -d ${D}/${OSCAMCONF}
-	install -m 0644 ${WORKDIR}/${OSCAMTPL}/* ${D}/${OSCAMCONF}
+	install -d ${D}${OSCAMCONF}
+	install -m 0644 ${WORKDIR}/${OSCAMTPL}/* ${D}${OSCAMCONF}
 
 	install -d ${D}${systemd_system_unitdir}
 	install -m 644 ${WORKDIR}/oscam.service ${D}${systemd_system_unitdir}

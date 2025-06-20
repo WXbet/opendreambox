@@ -1,8 +1,11 @@
 OSCAMTPL = "oscam-master"
 
+OSCAMREPO ?= "git://git.streamboard.tv/common/oscam.git;protocol=https;branch=master"
 OSCAMNAME ?= "oscam-master"
 OSCAMCONF ?= "${sysconfdir}/tuxbox/config"
 OSCAMPORT ?= "8888"
+OSCAMAUTH ?= "DreamOS OSCam Distribution"
+OSCAMOPTS ?= ""
 
 require oscam-common.inc
 
