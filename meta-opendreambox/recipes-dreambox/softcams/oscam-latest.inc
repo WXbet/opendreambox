@@ -1,12 +1,13 @@
 inherit git-project
 
 SRCREV = "${AUTOREV}"
-PV = "2.2x+git"
+PV = "${@ '1.40+svn' if 'svn:' in '${OSCAMREPO}' else '2.2x+git'}"
+
 SRC_URI += "${OSCAMREPO}"
 
 SUMMARY_${PN} = "${OSCAMNAME} ${PKGV}"
 DESCRIPTION_${PN} = "OSCam Open Source Softcam\n \
-- latest master"
+- latest"
 
 DEPENDS += "openssl-native"
 EXTRA_OECMAKE += "\

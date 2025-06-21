@@ -1,5 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/enigma2-plugin-softcams-oscam:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/enigma2-plugin-softcams-oscam/${OSCAMTPL}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}/${OSCAMTPL}:"
 
 CONFFILES_${PN} ?= "${OSCAMCONF}"
 
@@ -9,7 +8,7 @@ do_configure_prepend () {
 
 inherit cmake
 
-SRC_URI += "file://fix-cmake-stat.not-found.patch \
+SRC_URI += "${@ '' if 'svn:' in '${OSCAMREPO}' else 'file://fix-cmake-stat.not-found.patch'} \
             file://oscam.service \
             file://${OSCAMTPL}/ \
 "

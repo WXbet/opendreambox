@@ -1,4 +1,4 @@
-OSCAMTPL = "oscam-master"
+OSCAMTPL = "oscam"
 
 OSCAMREPO ?= "git://git.streamboard.tv/common/oscam.git;protocol=https;branch=master"
 OSCAMNAME ?= "oscam-master"
@@ -9,7 +9,7 @@ OSCAMOPTS ?= ""
 
 require oscam-common.inc
 
-S = "${WORKDIR}/git"
+S = "${WORKDIR}/${@ 'trunk' if 'svn:' in '${OSCAMREPO}' else 'git'}"
 
 DEPENDS += "pcsc-lite"
 RDEPENDS_${PN} += "pcsc-lite pcsc-tools"
