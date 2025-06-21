@@ -14,6 +14,8 @@ RDEPENDS_${PN} += " \
   tzdata \
   tzdata-europe \
   xfsprogs-mkfs \
+  libssl3 \
+  libusb1 \
   kernel-module-wireguard \
   wireguard-tools \
 "
