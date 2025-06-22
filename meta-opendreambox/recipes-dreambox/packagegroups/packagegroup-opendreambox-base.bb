@@ -16,8 +16,7 @@ RDEPENDS_${PN} += " \
   xfsprogs-mkfs \
   libssl3 \
   libusb1 \
-  kernel-module-wireguard \
-  wireguard-tools \
+  ${@base_version_less_or_equal('OLDEST_KERNEL', '3.9', '', 'kernel-module-wireguard wireguard-tools', d)} \
 "
 
 RRECOMMENDS_${PN} += " \
