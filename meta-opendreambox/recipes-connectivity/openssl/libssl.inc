@@ -31,7 +31,7 @@ FILES_libcrypto${BINV} = "${base_libdir}/libcrypto.so.${BINV}"
 
 do_configure () {
 	cd util
-	perl perlpath.pl ${STAGING_BINDIR_NATIVE}
+	perl -I${S}/util perlpath.pl ${STAGING_BINDIR_NATIVE}
 	cd ..
 	ln -sf apps/openssl.pod crypto/crypto.pod ssl/ssl.pod doc/
 
