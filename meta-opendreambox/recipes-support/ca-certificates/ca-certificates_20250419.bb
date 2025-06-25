@@ -14,19 +14,17 @@ DEPENDS_class-nativesdk = "openssl-native"
 # Need rehash from openssl and run-parts from debianutils
 PACKAGE_WRITE_DEPS += "openssl-native debianutils-native"
 
-SRCREV = "15229cb234becd05577c87b4e8a4522bab740f2f"
-
-SRC_URI = "git://salsa.debian.org/debian/ca-certificates.git;protocol=https;branch=master \
-           file://0002-update-ca-certificates-use-SYSROOT.patch \
+SRC_URI[sha256sum] = "33b44ef78653ecd3f0f2f13e5bba6be466be2e7da72182f737912b81798ba5d2"
+SRC_URI = "https://ftp.debian.org/debian/pool/main/c/ca-certificates/${BPN}_${PV}.tar.xz \
            file://0001-update-ca-certificates-don-t-use-Debianisms-in-run-p.patch \
-           file://default-sysroot.patch \
            file://0003-update-ca-certificates-use-relative-symlinks-from-ET.patch \
-           file://0001-Revert-Update-openssl-dependency-to-1.1.0.patch \
            file://0001-Revert-mozilla-certdata2pem.py-print-a-warning-for-e.patch \
+           file://0001-Revert-Update-openssl-dependency-to-1.1.0.patch \
            "
+
 UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>\d+)"
 
-S = "${WORKDIR}/git"
+S = "${WORKDIR}/ca-certificates"
 
 inherit allarch
 
@@ -67,7 +65,8 @@ do_install_append_class-target () {
 }
 
 pkg_postinst_${PN}_class-target () {
-    SYSROOT="$D" $D${sbindir}/update-ca-certificates
+    [ -n "$D" ] && sysroot_args="--sysroot $D"
+    $D${sbindir}/update-ca-certificates $sysroot_args
 }
 
 CONFFILES_${PN} += "${sysconfdir}/ca-certificates.conf"
@@ -76,11 +75,11 @@ CONFFILES_${PN} += "${sysconfdir}/ca-certificates.conf"
 # we just run update-ca-certificate from do_install() for nativesdk.
 CONFFILES_${PN}_append_class-nativesdk = " ${sysconfdir}/ssl/certs/ca-certificates.crt"
 do_install_append_class-nativesdk () {
-    SYSROOT="${D}${SDKPATHNATIVE}" ${D}${sbindir}/update-ca-certificates
+    ${D}${sbindir}/update-ca-certificates --sysroot ${D}${SDKPATHNATIVE}
 }
 
 do_install_append_class-native () {
-    SYSROOT="${D}${base_prefix}" ${D}${sbindir}/update-ca-certificates
+    ${D}${sbindir}/update-ca-certificates --sysroot ${D}${base_prefix}
 }
 
 RDEPENDS_${PN}_append_class-target = " openssl"
