@@ -64,6 +64,7 @@ RDEPENDS_${PN} = " \
         libsss-segment \
         parted \
         python-autobahn \
+        python-backports-lzma \
         python-codecs \
         python-compression \
         python-crypt \
