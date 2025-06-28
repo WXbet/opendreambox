@@ -30,6 +30,7 @@ RRECOMMENDS_${PN} += " \
   dropbear \
   e2fsprogs-e2fsck \
   hdstandby \
+  htop \
   joe \
   less \
   mc \
