@@ -9,8 +9,11 @@ SRC_URI = "file://opendreambox-krogoth.gpg \
 S = "${WORKDIR}"
 
 do_install() {
+    if [ "${PACKAGE_FEED_SIGN}" = "1" -a -n "${PACKAGE_FEED_GPG_NAME}" ]; then
+        gpg --export "${PACKAGE_FEED_GPG_NAME}" > "${WORKDIR}/${PACKAGE_FEED_GPG_NAME}.gpg"
+    fi
     install -d ${D}${sysconfdir}/apt/trusted.gpg.d
-    install -m 644 ${WORKDIR}/opendreambox-krogoth.gpg ${D}${sysconfdir}/apt/trusted.gpg.d
+    install -m 644 ${WORKDIR}/*.gpg ${D}${sysconfdir}/apt/trusted.gpg.d
 }
 
 RDEPENDS_${PN} = "gpgv"
