@@ -1,0 +1,79 @@
+From 92a86c0577d4cdc1dfd49fe6a30ed22123d1b8d9 Mon Sep 17 00:00:00 2001
+From: WXbet <you@example.com>
+Date: Sat, 28 Jun 2025 15:07:04 +0200
+Subject: [PATCH 1/1] package_manager: sign DEB package feeds
+backported from https://docs.yoctoproject.org/pipermail/poky/2019-April/011719.html
+---
+ meta/lib/oe/gpg_sign.py        |  6 +++++-
+ meta/lib/oe/package_manager.py | 17 +++++++++++++++--
+ 2 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/meta/lib/oe/gpg_sign.py b/meta/lib/oe/gpg_sign.py
+index b83ee86728..c51a1ba642 100644
+--- a/meta/lib/oe/gpg_sign.py
++++ b/meta/lib/oe/gpg_sign.py
+@@ -41,7 +41,7 @@ class LocalSigner(object):
+         if status:
+             raise bb.build.FuncFailed("Failed to sign RPM packages: %s" % output)
+ 
+-    def detach_sign(self, input_file, keyid, passphrase_file, passphrase=None, armor=True):
++    def detach_sign(self, input_file, keyid, passphrase_file, passphrase=None, armor=True, output_suffix=None, use_sha256=False):
+         """Create a detached signature of a file"""
+         import subprocess
+ 
+@@ -55,6 +55,10 @@ class LocalSigner(object):
+             cmd += ['--homedir', self.gpg_path]
+         if armor:
+             cmd += ['--armor']
++        if output_suffix:
++            cmd += ['-o', input_file + "." + output_suffix]
++        if use_sha256:
++            cmd += ['--digest-algo', "SHA256"]
+ 
+         #gpg > 2.1 supports password pipes only through the loopback interface
+         #gpg < 2.1 errors out if given unknown parameters
+diff --git a/meta/lib/oe/package_manager.py b/meta/lib/oe/package_manager.py
+index eef25491d9..bfafdb8d1c 100644
+--- a/meta/lib/oe/package_manager.py
++++ b/meta/lib/oe/package_manager.py
+@@ -252,6 +252,7 @@ class DpkgIndexer(Indexer):
+ 
+         index_cmds = []
+         deb_dirs_found = False
++        index_sign_files = set()
+         for arch in arch_list:
+             arch_dir = os.path.join(self.deploy_dir, arch)
+             if not os.path.isdir(arch_dir):
+@@ -262,7 +263,10 @@ class DpkgIndexer(Indexer):
+             cmd += "%s -fc Packages > Packages.gz;" % gzip
+             cmd += "%s -fc Packages > Packages.xz;" % xz
+ 
+-            with open(os.path.join(arch_dir, "Release"), "w+") as release:
++            release_file = os.path.join(arch_dir, "Release")
++            index_sign_files.add(release_file)
++
++            with open(release_file, "w+") as release:
+                 release.write("Label: %s\n" % arch)
+ 
+             cmd += "PSEUDO_UNLOAD=1 %s release . >> Release" % apt_ftparchive
+@@ -279,7 +283,16 @@ class DpkgIndexer(Indexer):
+         if result:
+             bb.fatal('%s' % ('\n'.join(result)))
+         if self.d.getVar('PACKAGE_FEED_SIGN', True) == '1':
+-            raise NotImplementedError('Package feed signing not implementd for dpkg')
++            signer = get_signer(self.d, self.d.getVar('PACKAGE_FEED_GPG_BACKEND', True))
++        else:
++            signer = None
++        if signer:
++            for f in index_sign_files:
++                signer.detach_sign(f,
++                                   self.d.getVar('PACKAGE_FEED_GPG_NAME', True),
++                                   self.d.getVar('PACKAGE_FEED_GPG_PASSPHRASE_FILE', True),
++                                   output_suffix="gpg",
++                                   use_sha256=True)
+ 
+ 
+ 
+-- 
+2.17.1
+

@@ -242,6 +242,13 @@ update:
 	else \
 		$(GIT) submodule sync && \
 		$(GIT) submodule update --init && \
+		for d in patches/*/; do \
+			if [ -e "$$d" ]; then \
+				cd $$(basename "$$d"); \
+				git am ../$$d*.patch; \
+				cd ..; \
+			fi; \
+		done; \
 		echo "[*] The Dreambox SDK is now up-to-date."; \
 	fi
 
