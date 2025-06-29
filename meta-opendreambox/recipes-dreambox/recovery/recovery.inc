@@ -7,6 +7,21 @@ inherit pkgconfig update-rc.d
 
 SRC_URI_append = ";branch=${BRANCH}"
 
+S = "${WORKDIR}/git"
+
+do_compile_prepend() {
+    if [ "${PACKAGE_FEED_SIGN}" = "1" -a -n "${PACKAGE_FEED_GPG_NAME}" -a -n "${DISTRO_FEED_URI}" ]; then
+        # inject base64 encoded gpg public key into create_keyring_for_uri function of librecovery
+        echo "\tKEY_CUSTOM=\"" > "${WORKDIR}/librecovery.tmp"
+        gpg --export "${PACKAGE_FEED_GPG_NAME}" | base64 | sed 's/^/\t\t/' >> "${WORKDIR}/librecovery.tmp"
+        echo "\t\"" >> "${WORKDIR}/librecovery.tmp"
+
+        sed -i '626 {p;}' "${S}/librecovery"
+        sed -i '627i\\t\t*${@d.getVar('DISTRO_FEED_URI', True).split('://',1)[1].replace('${MACHINE}', '${MACHINE')}\}/*)\n\t\t\tcreate_keyring \"\${KEY_CUSTOM}\"' "${S}/librecovery"
+        sed -i '615r ${WORKDIR}/librecovery.tmp' "${S}/librecovery"
+    fi
+}
+
 do_install() {
     oe_runmake install DESTDIR=${D}
 }
