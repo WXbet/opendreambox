@@ -1,4 +1,4 @@
-python dreambox_sign_image() {
+python do_image_sign() {
     from oe.gpg_sign import get_signer
     from glob import glob
 
@@ -8,20 +8,24 @@ python dreambox_sign_image() {
         signer = None
 
     deploy_dir_image = d.getVar('DEPLOY_DIR_IMAGE', True)
+    gpg_key_id = d.getVar('PACKAGE_FEED_GPG_NAME', True)
+    gpg_pass_file = d.getVar('PACKAGE_FEED_GPG_PASSPHRASE_FILE', True)
  
     if signer:
         files = glob(os.path.join(deploy_dir_image, "*.tar.xz")) + \
                 glob(os.path.join(deploy_dir_image, "*.bin")) + \
                 glob(os.path.join(deploy_dir_image, "*.nfo"))
 
+        bb.note("GPG key id: %s, passphrase file: %s" % (gpg_key_id, gpg_pass_file))
         for f in files:
             if os.path.isfile(f):
-                bb.note("Signing %s" % f) 
-                signer.detach_sign(f,
-                                    d.getVar('PACKAGE_FEED_GPG_NAME', True),
-                                    d.getVar('PACKAGE_FEED_GPG_PASSPHRASE_FILE', True),
-                                    output_suffix="sig",
-                                    use_sha256=True)
+                bb.note("sign file %s" % f)
+                signer.detach_sign(f, gpg_key_id, gpg_pass_file,
+                                    output_suffix="sig", use_sha256=True)
+    else:
+        bb.note("GPG signing is disabled!")
 }
 
-IMAGE_POSTPROCESS_COMMAND += "dreambox_sign_image;"
+addtask image_sign after do_image_complete before do_image_qa
+do_image_sign[nostamp] = "1"
+do_image_sign[dirs] = "${DEPLOY_DIR_IMAGE}"
