@@ -53,31 +53,24 @@ diff -u a/gst/dvdspu/gstdvdspu.c b/gst/dvdspu/gstdvdspu.c
      );
  
  static GstStaticPadTemplate subpic_sink_factory =
-@@ -87,10 +96,13 @@
+@@ -87,8 +87,10 @@ static gboolean gst_dvd_spu_src_event (GstPad * pad, GstObject * parent,
      GstEvent * event);
  static gboolean gst_dvd_spu_src_query (GstPad * pad, GstObject * parent,
      GstQuery * query);
 +static GstCaps *gst_dvd_spu_src_get_caps (GstDVDSpu * dvdspu, GstPad * pad,
 +    GstCaps * filter);
- 
+
 -static GstCaps *gst_dvd_spu_video_proxy_getcaps (GstPad * pad,
 +static GstCaps *gst_dvd_spu_video_get_caps (GstDVDSpu * dvdspu, GstPad * pad,
      GstCaps * filter);
--static gboolean gst_dvd_spu_video_set_caps (GstPad * pad, GstCaps * caps);
-+static gboolean gst_dvd_spu_video_set_caps (GstDVDSpu * dvdspu, GstPad * pad,
-+    GstCaps * caps);
- static GstFlowReturn gst_dvd_spu_video_chain (GstPad * pad, GstObject * parent,
-     GstBuffer * buf);
- static gboolean gst_dvd_spu_video_event (GstPad * pad, GstObject * parent,
-@@ -104,7 +116,9 @@
-     GstBuffer * buf);
- static gboolean gst_dvd_spu_subpic_event (GstPad * pad, GstObject * parent,
+ static gboolean gst_dvd_spu_video_set_caps (GstDVDSpu * dvdspu, GstPad * pad,
+     GstCaps * caps);
+@@ -107,6 +109,7 @@ static gboolean gst_dvd_spu_subpic_event (GstPad * pad, GstObject * parent,
      GstEvent * event);
--static gboolean gst_dvd_spu_subpic_set_caps (GstPad * pad, GstCaps * caps);
-+static gboolean gst_dvd_spu_subpic_set_caps (GstDVDSpu * dvdspu, GstPad * pad,
-+    GstCaps * caps);
+ static gboolean gst_dvd_spu_subpic_set_caps (GstDVDSpu * dvdspu, GstPad * pad,
+     GstCaps * caps);
 +static gboolean gst_dvd_spu_negotiate (GstDVDSpu * dvdspu, GstCaps * caps);
- 
+
  static void gst_dvd_spu_clear (GstDVDSpu * dvdspu);
  static void gst_dvd_spu_flush_spu_info (GstDVDSpu * dvdspu,
 @@ -174,6 +188,15 @@
