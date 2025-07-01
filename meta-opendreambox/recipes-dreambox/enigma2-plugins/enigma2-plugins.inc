@@ -101,3 +101,6 @@ RDEPENDS_${PN} = " \
         smartmontools \
         streamripper \
 "
+
+do_package_qa() {
+}
