@@ -1,6 +1,6 @@
 PACKAGES =+ "${PN}-carl9170 ${PN}-rt2800usb ${PN}-rt73usb"
 
-LICENSE_${PN}-carl9170 = "GPLv2+"
+LICENSE_${PN}-carl9170 = "Firmware-atheros_firmware"
 FILES_${PN}-carl9170 = " \
   /lib/firmware/carl9170-1.fw \
 "
