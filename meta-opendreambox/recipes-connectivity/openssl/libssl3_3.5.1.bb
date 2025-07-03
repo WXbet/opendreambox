@@ -13,7 +13,7 @@ SRC_URI += "http://www.openssl.org/source/openssl-${PV}.tar.gz \
            file://0001-Added-handshake-history-reporting-when-test-fails.patch \
            "
 
-SRC_URI[sha256sum] = "344d0a79f1a9b08029b0744e2cc401a43f9c90acd1044d09a530b4885a8e9fc0"
+SRC_URI[sha256sum] = "529043b15cffa5f36077a4d0af83f3de399807181d607441d734196d889b641f"
 
 inherit perlnative
 
