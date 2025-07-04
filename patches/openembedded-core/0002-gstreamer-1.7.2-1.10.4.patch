@@ -1,0 +1,3540 @@
+From 7a430fba48e3052f2cd4d8aefdc16d065f8ecdf0 Mon Sep 17 00:00:00 2001
+From: WXbet <you@example.com>
+Date: Sat, 5 Jul 2025 00:32:07 +0200
+Subject: [PATCH] gstreamer: 1.7.2 -> 1.10.4
+
+---
+ ...0001-gtk-play-Disable-visualizations.patch |  58 ++
+ .../gstreamer/gst-player/gst-player.desktop   |   2 +-
+ .../gstreamer/gst-player/gtk2.patch           |  71 --
+ .../gstreamer/gst-player_git.bb               |  36 +-
+ ...ufferpool-create-allocator-if-needed.patch |  59 ++
+ .../gstreamer/gstreamer1.0-libav.inc          |   6 +-
+ .../mips64_cpu_detection.patch                |  32 +
+ ..._1.6.4.bb => gstreamer1.0-libav_1.10.4.bb} |   8 +-
+ .../gstreamer/gstreamer1.0-libav_git.bb       |  38 -
+ .../gstreamer/gstreamer1.0-omx.inc            |   3 +-
+ ...-omx-fixed-type-error-in-printf-call.patch |  30 -
+ ...mx_1.2.0.bb => gstreamer1.0-omx_1.10.4.bb} |   4 +-
+ .../gstreamer/gstreamer1.0-omx_git.bb         |  25 -
+ .../gstreamer/gstreamer1.0-plugins-bad.inc    |  41 +-
+ ...t-hardcode-libtool-name-when-running.patch |  35 +-
+ ...FIG_SYSROOT_DIR-to-pkg-config-output.patch |  34 +
+ ....in-don-t-append-GL_CFLAGS-to-CFLAGS.patch |  15 +-
+ ...demux-improved-live-playback-support.patch | 928 ++++++++++++++++++
+ ...implement-adaptivedemux-s-get_live_s.patch | 182 ++++
+ ...use-the-duration-from-the-list-of-fr.patch |  61 ++
+ ...w-fix-memory-leak-of-navigation-thre.patch |  35 -
+ ...09-glimagesink-Downrank-to-marginal.patch} |   2 +-
+ ...-sentinels-for-gst_structure_get-etc.patch |  63 +-
+ .../gstreamer1.0-plugins-bad_1.10.4.bb        |  27 +
+ .../gstreamer1.0-plugins-bad_1.6.4.bb         |  28 -
+ .../gstreamer/gstreamer1.0-plugins-bad_git.bb |  65 --
+ .../gstreamer/gstreamer1.0-plugins-base.inc   |   6 +-
+ ...t-hardcode-libtool-name-when-running.patch |  20 +-
+ ...ix-calls-to-pkg-config-with-PKG_CONF.patch |  38 +-
+ ...ect-reference-to-gstreamer-sdp-in-Ma.patch |   2 +-
+ ...d_segment-after-sink-pad-received-GS.patch |   2 +-
+ ...upport-video-crop-when-convert-frame.patch | 143 ---
+ ...ore-buffers-in-output-queue-for-bett.patch |   2 +-
+ ...et-caps-from-src-pad-when-query-caps.patch |   2 +-
+ ...gio_unix_2_0-dependency-configurable.patch |   4 +-
+ ...bb => gstreamer1.0-plugins-base_1.10.4.bb} |  16 +-
+ .../gstreamer1.0-plugins-base_git.bb          |  27 -
+ .../gstreamer/gstreamer1.0-plugins-good.inc   |   7 +-
+ ...t-dafault-value-for-MPEG4-without-co.patch |   6 +-
+ ...add-videometa-if-there-is-padding-to.patch |  34 +
+ ...bb => gstreamer1.0-plugins-good_1.10.4.bb} |  11 +-
+ .../gstreamer1.0-plugins-good_git.bb          |  28 -
+ .../gstreamer/gstreamer1.0-plugins-ugly.inc   |   3 +-
+ ...bb => gstreamer1.0-plugins-ugly_1.10.4.bb} |   8 +-
+ .../gstreamer1.0-plugins-ugly_git.bb          |  41 -
+ .../gstreamer/gstreamer1.0-plugins.inc        |  19 +-
+ .../gstreamer/gstreamer1.0-rtsp-server.inc    |  20 +-
+ .../gstreamer1.0-rtsp-server_1.10.4.bb        |   6 +
+ .../gstreamer1.0-rtsp-server_1.6.4.bb         |   6 -
+ .../gstreamer/gstreamer1.0-vaapi.inc          |  38 +
+ .../gstreamer/gstreamer1.0-vaapi_1.10.4.bb    |   7 +
+ .../gstreamer/gstreamer1.0.inc                |  21 +-
+ .../0001-Fix-crash-with-gst-inspect.patch     |  28 -
+ .../gstreamer1.0/deterministic-unwind.patch   |  24 +
+ ...mer1.0_1.6.4.bb => gstreamer1.0_1.10.4.bb} |   9 +-
+ .../gstreamer/gstreamer1.0_git.bb             |  30 -
+ 56 files changed, 1715 insertions(+), 781 deletions(-)
+ create mode 100644 meta/recipes-multimedia/gstreamer/gst-player/0001-gtk-play-Disable-visualizations.patch
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gst-player/gtk2.patch
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer-vaapi/vaapivideobufferpool-create-allocator-if-needed.patch
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-libav/mips64_cpu_detection.patch
+ rename meta/recipes-multimedia/gstreamer/{gstreamer1.0-libav_1.6.4.bb => gstreamer1.0-libav_1.10.4.bb} (81%)
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_git.bb
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-omx/0001-omx-fixed-type-error-in-printf-call.patch
+ rename meta/recipes-multimedia/gstreamer/{gstreamer1.0-omx_1.2.0.bb => gstreamer1.0-omx_1.10.4.bb} (69%)
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_git.bb
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Prepend-PKG_CONFIG_SYSROOT_DIR-to-pkg-config-output.patch
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-mssdemux-improved-live-playback-support.patch
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-implement-adaptivedemux-s-get_live_s.patch
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-use-the-duration-from-the-list-of-fr.patch
+ delete mode 100755 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0002-glplugin-glwindow-fix-memory-leak-of-navigation-thre.patch
+ rename meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/{0001-glimagesink-Downrank-to-marginal.patch => 0009-glimagesink-Downrank-to-marginal.patch} (95%)
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.10.4.bb
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.6.4.bb
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_git.bb
+ delete mode 100755 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0005-convertframe-Support-video-crop-when-convert-frame.patch
+ rename meta/recipes-multimedia/gstreamer/{gstreamer1.0-plugins-base_1.6.4.bb => gstreamer1.0-plugins-base_1.10.4.bb} (54%)
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_git.bb
+ mode change 100755 => 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-v4l2object-Also-add-videometa-if-there-is-padding-to.patch
+ rename meta/recipes-multimedia/gstreamer/{gstreamer1.0-plugins-good_1.6.4.bb => gstreamer1.0-plugins-good_1.10.4.bb} (54%)
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_git.bb
+ rename meta/recipes-multimedia/gstreamer/{gstreamer1.0-plugins-ugly_1.6.4.bb => gstreamer1.0-plugins-ugly_1.10.4.bb} (57%)
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_git.bb
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.10.4.bb
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.6.4.bb
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi.inc
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi_1.10.4.bb
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0/0001-Fix-crash-with-gst-inspect.patch
+ create mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0/deterministic-unwind.patch
+ rename meta/recipes-multimedia/gstreamer/{gstreamer1.0_1.6.4.bb => gstreamer1.0_1.10.4.bb} (57%)
+ delete mode 100644 meta/recipes-multimedia/gstreamer/gstreamer1.0_git.bb
+
+diff --git a/meta/recipes-multimedia/gstreamer/gst-player/0001-gtk-play-Disable-visualizations.patch b/meta/recipes-multimedia/gstreamer/gst-player/0001-gtk-play-Disable-visualizations.patch
+new file mode 100644
+index 0000000000..dd26425b8e
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gst-player/0001-gtk-play-Disable-visualizations.patch
+@@ -0,0 +1,58 @@
++From 6cf42c468e93b0aaa171961e059bc3e2fb915889 Mon Sep 17 00:00:00 2001
++From: Jussi Kukkonen <jussi.kukkonen@intel.com>
++Date: Fri, 28 Apr 2017 14:35:19 +0300
++Subject: [PATCH] gtk-play: Disable visualizations
++
++This is a workaround for [YOCTO #11410] (audio playback is broken in
++mediaplayer if vaapi is used). It disables visualizations and makes
++sure we clear the window (otherwise nothing does that and result is
++very ugly).
++
++This patch should be removed when 11410 is fixed.
++
++Upstream-Status: Inappropriate [bug workaround]
++Signed-off-by: Jussi Kukkonen <jussi.kukkonen@intel.com>
++---
++ gtk/gtk-play.c | 13 ++++++++++++-
++ 1 file changed, 12 insertions(+), 1 deletion(-)
++
++diff --git a/gtk/gtk-play.c b/gtk/gtk-play.c
++index 8ae0fea..63b9bb0 100644
++--- a/gtk/gtk-play.c
+++++ b/gtk/gtk-play.c
++@@ -1401,6 +1401,15 @@ get_child_position (GtkOverlay * overlay, GtkWidget * widget,
++   return TRUE;
++ }
++
+++/* Hack to make sure something gets drawn if visualizations are disabled */
+++static gboolean
+++draw_cb (GtkWidget *widget, cairo_t *cr, gpointer data)
+++{
+++  cairo_set_source_rgb (cr, 0, 0, 0);
+++  cairo_paint (cr);
+++  return FALSE;
+++}
+++
++ static void
++ create_ui (GtkPlay * play)
++ {
++@@ -1431,6 +1440,8 @@ create_ui (GtkPlay * play)
++     play->video_area = gtk_drawing_area_new ();
++     g_signal_connect (play->video_area, "realize",
++         G_CALLBACK (video_area_realize_cb), play);
+++    g_signal_connect (play->video_area, "draw",
+++        G_CALLBACK (draw_cb), NULL);
++   }
++   gtk_widget_set_events (play->video_area, GDK_EXPOSURE_MASK
++       | GDK_LEAVE_NOTIFY_MASK
++@@ -1753,7 +1764,7 @@ gtk_play_constructor (GType type, guint n_construct_params,
++
++   /* enable visualization (by default playbin uses goom) */
++   /* if visualization is enabled then use the first element */
++-  gst_player_set_visualization_enabled (self->player, TRUE);
+++  gst_player_set_visualization_enabled (self->player, FALSE);
++
++   g_signal_connect (G_OBJECT (self), "show", G_CALLBACK (show_cb), NULL);
++
++--
++2.1.4
+diff --git a/meta/recipes-multimedia/gstreamer/gst-player/gst-player.desktop b/meta/recipes-multimedia/gstreamer/gst-player/gst-player.desktop
+index 9fd207b384..7ddd456a1e 100644
+--- a/meta/recipes-multimedia/gstreamer/gst-player/gst-player.desktop
++++ b/meta/recipes-multimedia/gstreamer/gst-player/gst-player.desktop
+@@ -1,7 +1,7 @@
+ [Desktop Entry]
+ Name=Media Player
+ Comment=Basic media player
+-Icon=audio-player
++Icon=multimedia-player
+ TryExec=gtk-play
+ Exec=gtk-play
+ StartupNotify=true
+diff --git a/meta/recipes-multimedia/gstreamer/gst-player/gtk2.patch b/meta/recipes-multimedia/gstreamer/gst-player/gtk2.patch
+deleted file mode 100644
+index 2cd18bbc95..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gst-player/gtk2.patch
++++ /dev/null
+@@ -1,71 +0,0 @@
+-As the rest of Sato is GTK+ 2, patch gtk-play to use GTK+ 2.  When the rest of
+-Sato has been ported to GTK+ 3 this patch can be dropped.
+-
+-Upstream-Status: Inappropriate
+-Signed-off-by: Ross Burton <ross.burton@intel.com>
+-
+-
+-diff --git a/configure.ac b/configure.ac
+-index b8af13b..90ab74c 100644
+---- a/configure.ac
+-+++ b/configure.ac
+-@@ -60,7 +60,7 @@ AC_SUBST(GLIB_PREFIX)
+- GST_PREFIX="`$PKG_CONFIG --variable=prefix gstreamer-1.0`"
+- AC_SUBST(GST_PREFIX)
+- 
+--PKG_CHECK_MODULES(GTK, [gtk+-3.0], [have_gtk="yes"], [have_gtk="no"])
+-+PKG_CHECK_MODULES(GTK, [gtk+-2.0], [have_gtk="yes"], [have_gtk="no"])
+- AM_CONDITIONAL(HAVE_GTK, test "x$have_gtk" != "xno")
+- 
+- GOBJECT_INTROSPECTION_CHECK([1.31.1])
+-diff --git a/gtk/gtk-play.c b/gtk/gtk-play.c
+-index f015077..954d6fb 100644
+---- a/gtk/gtk-play.c
+-+++ b/gtk/gtk-play.c
+-@@ -34,6 +34,46 @@ typedef struct
+-   gulong seekbar_value_changed_signal_id;
+- } GtkPlay;
+- 
+-+/* Compat stubs */
+-+GtkWidget *
+-+gtk_box_new (GtkOrientation orientation,
+-+             gint spacing)
+-+{
+-+  switch (orientation) {
+-+  case GTK_ORIENTATION_HORIZONTAL:
+-+    return gtk_hbox_new (FALSE, spacing);
+-+  case GTK_ORIENTATION_VERTICAL:
+-+    return gtk_vbox_new (FALSE, spacing);
+-+  }
+-+}
+-+
+-+GtkWidget*
+-+gtk_button_new_from_icon_name (const gchar *icon_name,
+-+                               GtkIconSize  size)
+-+{
+-+  GtkWidget *button;
+-+  GtkWidget *image;
+-+
+-+  image = gtk_image_new_from_icon_name (icon_name, size);
+-+  button =  g_object_new (GTK_TYPE_BUTTON,
+-+                         "image", image,
+-+                         NULL);
+-+  return button;
+-+}
+-+
+-+GtkWidget *
+-+gtk_scale_new_with_range (GtkOrientation orientation,
+-+                          gdouble min,
+-+                          gdouble max,
+-+                          gdouble step)
+-+{
+-+  switch (orientation) {
+-+  case GTK_ORIENTATION_HORIZONTAL:
+-+    return gtk_hscale_new_with_range (min, max, step);
+-+  case GTK_ORIENTATION_VERTICAL:
+-+    return gtk_vscale_new_with_range (min, max, step);
+-+  }
+-+}
+- 
+- static void
+- set_title (GtkPlay * play, const gchar * title)
+diff --git a/meta/recipes-multimedia/gstreamer/gst-player_git.bb b/meta/recipes-multimedia/gstreamer/gst-player_git.bb
+index 8129169c53..cb12a464a4 100644
+--- a/meta/recipes-multimedia/gstreamer/gst-player_git.bb
++++ b/meta/recipes-multimedia/gstreamer/gst-player_git.bb
+@@ -1,39 +1,37 @@
+ SUMMARY = "GStreamer playback helper library and examples"
+ LICENSE = "LGPL-2.0+"
+-LIC_FILES_CHKSUM = "file://lib/gst/player/gstplayer.c;beginline=1;endline=19;md5=03aeca9d8295f811817909075a15ff65"
++LIC_FILES_CHKSUM = "file://gtk/gtk-play.c;beginline=1;endline=20;md5=f8c72dae3d36823ec716a9ebcae593b9"
+ 
+-DEPENDS = "glib-2.0 gstreamer1.0 gstreamer1.0-plugins-base gtk+"
++DEPENDS = "glib-2.0 gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad gtk+3 glib-2.0-native"
+ 
+ SRC_URI = "git://github.com/sdroege/gst-player.git \
+-           file://filechooser.patch \
+-           file://gtk2.patch \
+-           file://Fix-pause-play.patch \
+-           file://Add-error-signal-emission-for-missing-plugins.patch \
++           file://filechooser.patch;apply=0 \
++           file://Fix-pause-play.patch;apply=0 \
++           file://Add-error-signal-emission-for-missing-plugins.patch;apply=0 \
++           file://0001-gtk-play-Disable-visualizations.patch \
+            file://gst-player.desktop"
+ 
+-SRCREV = "5386c5b984d40ef5434673ed62204e69aaf52645"
++SRCREV = "ee3c226c82767a089743e4e06058743e67f73cdb"
++PV = "0.0.1+git${SRCPV}"
+ 
+ S = "${WORKDIR}/git"
+ 
+-inherit autotools gtk-doc lib_package pkgconfig distro_features_check gobject-introspection
++inherit autotools pkgconfig distro_features_check
+ 
+-ANY_OF_DISTRO_FEATURES = "${GTK2DISTROFEATURES}"
++ANY_OF_DISTRO_FEATURES = "${GTK3DISTROFEATURES}"
+ 
+ do_configure_prepend() {
+ 	touch ${S}/ChangeLog
+ }
+ 
+-EXTRA_OECONF += "ac_cv_path_VALGRIND=no ac_cv_path_GDB=no"
+-
+ do_install_append() {
+ 	install -m 0644 -D ${WORKDIR}/gst-player.desktop ${D}${datadir}/applications/gst-player.desktop
+ }
+ 
+-FILES_${PN}-bin += "${datadir}/applications/*.desktop"
+-
+-RDEPENDS_${PN}-bin = "gstreamer1.0-plugins-base-playback"
+-RRECOMMENDS_${PN}-bin = "gstreamer1.0-plugins-base-meta \
+-                         gstreamer1.0-plugins-good-meta \
+-                         gstreamer1.0-plugins-bad-meta \
+-                         ${@bb.utils.contains("LICENSE_FLAGS_WHITELIST", "commercial", "gstreamer1.0-libav", "", d)} \
+-                         ${@bb.utils.contains("LICENSE_FLAGS_WHITELIST", "commercial", "gstreamer1.0-plugins-ugly-meta", "", d)}"
++RDEPENDS_${PN} = "gstreamer1.0-plugins-base-playback"
++RRECOMMENDS_${PN} = "gstreamer1.0-plugins-base-meta \
++                     gstreamer1.0-plugins-good-meta \
++                     gstreamer1.0-plugins-bad-meta \
++                      ${@bb.utils.contains("LICENSE_FLAGS_WHITELIST", "commercial", "gstreamer1.0-libav", "", d)} \
++                     ${@bb.utils.contains("LICENSE_FLAGS_WHITELIST", "commercial", "gstreamer1.0-plugins-ugly-meta", "", d)}"
++RPROVIDES_${PN} += "${PN}-bin"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer-vaapi/vaapivideobufferpool-create-allocator-if-needed.patch b/meta/recipes-multimedia/gstreamer/gstreamer-vaapi/vaapivideobufferpool-create-allocator-if-needed.patch
+new file mode 100644
+index 0000000000..82a5eedec4
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer-vaapi/vaapivideobufferpool-create-allocator-if-needed.patch
+@@ -0,0 +1,59 @@
++Signed-off-by: Jussi Kukkonen <jussi.kukkonen@intel.com>
++Upstream-Status: Backport [commit 59a731be6b in '1.10' branch]
++
++
++From 02a6002c3a80b3a5301c0943b1a1518bbdf439fc Mon Sep 17 00:00:00 2001
++From: =?UTF-8?q?V=C3=ADctor=20Manuel=20J=C3=A1quez=20Leal?=
++ <vjaquez@igalia.com>
++Date: Fri, 21 Apr 2017 19:07:18 +0200
++Subject: [PATCH] vaapivideobufferpool: create allocator if needed
++
++Backport to branch 1.10
++
++Sometimes a video decoder could set different buffer pool
++configurations, because their frame size changes. In this case we
++did not reconfigure the allocator.
++
++This patch enables this use case, creating a new allocator inside
++the VAAPI buffer pool if the caps changed, if it is not dmabuf-based.
++If so, it is just reconfigured, since it doesn't have a surface pool.
++
++https://bugzilla.gnome.org/show_bug.cgi?id=781577
++---
++ gst/vaapi/gstvaapivideobufferpool.c | 21 +++++++++++++++++++++
++ 1 file changed, 21 insertions(+)
++
++diff --git a/gst/vaapi/gstvaapivideobufferpool.c b/gst/vaapi/gstvaapivideobufferpool.c
++index a3b9223f..9a50614b 100644
++--- a/gst/vaapi/gstvaapivideobufferpool.c
+++++ b/gst/vaapi/gstvaapivideobufferpool.c
++@@ -159,6 +159,27 @@ gst_vaapi_video_buffer_pool_set_config (GstBufferPool * pool,
++     gst_object_replace ((GstObject **) & priv->allocator, NULL);
++   priv->video_info = new_vip;
++
+++  {
+++    guint surface_alloc_flags;
+++    gboolean vinfo_changed = FALSE;
+++
+++    if (allocator) {
+++      const GstVideoInfo *alloc_vinfo =
+++          gst_allocator_get_vaapi_video_info (allocator, &surface_alloc_flags);
+++      vinfo_changed = gst_video_info_changed (alloc_vinfo, &new_vip);
+++    }
+++
+++    if (vinfo_changed && allocator && priv->use_dmabuf_memory) {
+++      gst_allocator_set_vaapi_video_info (allocator, &new_vip,
+++          surface_alloc_flags);
+++    } else if (!priv->use_dmabuf_memory && (vinfo_changed || !allocator)) {
+++      /* let's destroy the other allocator and create a new one */
+++      allocator = gst_vaapi_video_allocator_new (priv->display, &new_vip,
+++          surface_alloc_flags);
+++      gst_buffer_pool_config_set_allocator (config, allocator, NULL);
+++    }
+++  }
+++
++   if (!gst_buffer_pool_config_has_option (config,
++           GST_BUFFER_POOL_OPTION_VAAPI_VIDEO_META))
++     goto error_no_vaapi_video_meta_option;
++--
++2.11.0
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav.inc
+index 2814a58791..c2283061cc 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav.inc
+@@ -7,7 +7,7 @@ LICENSE_FLAGS = "commercial"
+ 
+ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base zlib bzip2 xz"
+ 
+-inherit autotools pkgconfig upstream-version-is-even
++inherit autotools pkgconfig upstream-version-is-even gtk-doc
+ 
+ # CAUTION: Using the system libav is not recommended. Since the libav API is changing all the time,
+ # compilation errors (and other, more subtle bugs) can happen. It is usually better to rely on the
+@@ -30,6 +30,10 @@ LIBAV_EXTRA_CONFIGURE_COMMON_ARG = "--target-os=linux \
+   ${GSTREAMER_1_0_DEBUG} \
+   --cross-prefix='${HOST_PREFIX}'"
+ 
++# Disable assembly optimizations for X32, as this libav lacks the support
++PACKAGECONFIG_remove_linux-gnux32 = "yasm"
++LIBAV_EXTRA_CONFIGURE_COMMON_ARG_append_linux-gnux32 = " --disable-asm"
++
+ LIBAV_EXTRA_CONFIGURE_COMMON = \
+ '${LIBAV_EXTRA_CONFIGURE}="${LIBAV_EXTRA_CONFIGURE_COMMON_ARG}"'
+ 
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav/mips64_cpu_detection.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav/mips64_cpu_detection.patch
+new file mode 100644
+index 0000000000..671327f457
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav/mips64_cpu_detection.patch
+@@ -0,0 +1,32 @@
++It will add -mips64r6 and -mips64r2 to cmdline which will
++cause conflicts
++
++in OE we user mips32r2 and mips64r2 for mips arch versions
++so there is no benefit of detecting it automatically by
++poking at tools especially in cross env
++
++Fixes errors like
++
++linking -mnan=2008 module with previous -mnan=legacy modules
++failed to merge target specific data of file
++
++-Khem
++Upstream-Status: Inappropriate [OE-Specific]
++
++Index: gst-libav-1.10.1/gst-libs/ext/libav/configure
++===================================================================
++--- gst-libav-1.10.1.orig/gst-libs/ext/libav/configure
+++++ gst-libav-1.10.1/gst-libs/ext/libav/configure
++@@ -5269,12 +5269,9 @@ elif enabled mips; then
++
++     # Enable minimum ISA based on selected options
++     if enabled mips64; then
++-        enabled mips64r6 && check_inline_asm_flags mips64r6 '"dlsa $0, $0, $0, 1"' '-mips64r6'
++         enabled mips64r2 && check_inline_asm_flags mips64r2 '"dext $0, $0, 0, 1"' '-mips64r2'
++         disabled mips64r6 && disabled mips64r2 && check_inline_asm_flags mips64r1 '"daddi $0, $0, 0"' '-mips64'
++     else
++-        enabled mips32r6 && check_inline_asm_flags mips32r6 '"aui $0, $0, 0"' '-mips32r6'
++-        enabled mips32r5 && check_inline_asm_flags mips32r5 '"eretnc"' '-mips32r5'
++         enabled mips32r2 && check_inline_asm_flags mips32r2 '"ext $0, $0, 0, 1"' '-mips32r2'
++         disabled mips32r6 && disabled mips32r5 && disabled mips32r2 && check_inline_asm_flags mips32r1 '"addi $0, $0, 0"' '-mips32'
++     fi
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_1.6.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_1.10.4.bb
+similarity index 81%
+rename from meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_1.6.4.bb
+rename to meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_1.10.4.bb
+index 027929bc4f..59d81db03a 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_1.6.4.bb
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_1.10.4.bb
+@@ -1,4 +1,4 @@
+-include gstreamer1.0-libav.inc
++require gstreamer1.0-libav.inc
+ 
+ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+                     file://COPYING.LIB;md5=6762ed442b3822387a51c92d928ead0d \
+@@ -12,9 +12,9 @@ SRC_URI = " \
+     http://gstreamer.freedesktop.org/src/gst-libav/gst-libav-${PV}.tar.xz \
+     file://0001-Disable-yasm-for-libav-when-disable-yasm.patch \
+     file://workaround-to-build-gst-libav-for-i586-with-gcc.patch \
++    file://mips64_cpu_detection.patch \
+ "
+-
+-SRC_URI[md5sum] = "d9922f6246f4ff0472d0ac3ada287f52"
+-SRC_URI[sha256sum] = "c0b3c3a831838ad8ce8d04e39dc50b95c12701f52dfec5cecb509a2b299324d3"
++SRC_URI[md5sum] = "e2bdd9fde6ca3ff7efffb93df121f4fd"
++SRC_URI[sha256sum] = "6ca0feca75e3d48315e07f20ec37cf6260ed1e9dde58df355febd5016246268b"
+ 
+ S = "${WORKDIR}/gst-libav-${PV}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_git.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_git.bb
+deleted file mode 100644
+index ebc8a5ef2e..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-libav_git.bb
++++ /dev/null
+@@ -1,38 +0,0 @@
+-DEFAULT_PREFERENCE = "-1"
+-
+-include gstreamer1.0-libav.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+-                    file://COPYING.LIB;md5=6762ed442b3822387a51c92d928ead0d \
+-                    file://ext/libav/gstav.h;beginline=1;endline=18;md5=a752c35267d8276fd9ca3db6994fca9c \
+-                    file://gst-libs/ext/libav/LICENSE.md;md5=acda96fe91ccaabc9cd9d541806a0d37 \
+-                    file://gst-libs/ext/libav/COPYING.GPLv2;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+-                    file://gst-libs/ext/libav/COPYING.GPLv3;md5=d32239bcb673463ab874e80d47fae504 \
+-                    file://gst-libs/ext/libav/COPYING.LGPLv2.1;md5=bd7a443320af8c812e4c18d1b79df004 \
+-                    file://gst-libs/ext/libav/COPYING.LGPLv3;md5=e6a600fd5e1d9cbde2d983680233ad02"
+-
+-# To build using the system libav/ffmpeg, append "libav" to PACKAGECONFIG
+-# and remove the ffmpeg sources from SRC_URI below. However, first note the
+-# warnings in gstreamer1.0-libav.inc
+-SRC_URI = " \
+-    git://anongit.freedesktop.org/gstreamer/gst-libav;name=base \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;name=common \
+-    git://source.ffmpeg.org/ffmpeg;destsuffix=git/gst-libs/ext/libav;name=ffmpeg;branch=release/3.0 \
+-    file://0001-Disable-yasm-for-libav-when-disable-yasm.patch \
+-    file://workaround-to-build-gst-libav-for-i586-with-gcc.patch \
+-"
+-
+-PV = "1.7.2+git${SRCPV}"
+-
+-UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>(\d+(\.\d+)+))"
+-
+-SRCREV_base = "6c4878b6abc916b7f6f25b8926c4859119acf1ec"
+-SRCREV_common = "b64f03f6090245624608beb5d2fff335e23a01c0"
+-SRCREV_ffmpeg = "c40983a6f631d22fede713d535bb9c31d5c9740c"
+-SRCREV_FORMAT = "base"
+-
+-S = "${WORKDIR}/git"
+-
+-do_configure_prepend() {
+-	${S}/autogen.sh --noconfigure
+-}
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx.inc
+index 0fff612eee..07e5b7db5e 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx.inc
+@@ -7,11 +7,10 @@ LICENSE_FLAGS = "commercial"
+ 
+ DEPENDS = "gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
+ 
+-inherit autotools pkgconfig gettext
++inherit autotools pkgconfig gettext gtk-doc upstream-version-is-even
+ 
+ acpaths = "-I ${S}/common/m4 -I ${S}/m4"
+ 
+-PR = "r1"
+ 
+ GSTREAMER_1_0_OMX_TARGET ?= "bellagio"
+ GSTREAMER_1_0_OMX_CORE_NAME ?= "${libdir}/libomxil-bellagio.so.0"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx/0001-omx-fixed-type-error-in-printf-call.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx/0001-omx-fixed-type-error-in-printf-call.patch
+deleted file mode 100644
+index a428ac9c91..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx/0001-omx-fixed-type-error-in-printf-call.patch
++++ /dev/null
+@@ -1,30 +0,0 @@
+-From f629e041e9f678fcd86ad764a15117dff63c271c Mon Sep 17 00:00:00 2001
+-From: Carlos Rafael Giani <dv@pseudoterminal.org>
+-Date: Sat, 27 Apr 2013 02:50:25 +0200
+-Subject: [PATCH] omx: fixed type error in printf call
+-
+-%zu expects size_t
+-
+-Upstream-Status: Submitted [https://bugzilla.gnome.org/show_bug.cgi?id=699008]
+-
+-Signed-off-by: Carlos Rafael Giani <dv@pseudoterminal.org>
+----
+- omx/gstomx.c |    2 +-
+- 1 file changed, 1 insertion(+), 1 deletion(-)
+-
+-diff --git a/omx/gstomx.c b/omx/gstomx.c
+-index a2945ed..1eca7cc 100644
+---- a/omx/gstomx.c
+-+++ b/omx/gstomx.c
+-@@ -1630,7 +1630,7 @@ gst_omx_port_allocate_buffers_unlocked (GstOMXPort * port,
+- 
+-   GST_INFO_OBJECT (comp->parent,
+-       "Allocating %d buffers of size %zu for %s port %u", n,
+--      port->port_def.nBufferSize, comp->name, (guint) port->index);
+-+      (size_t) (port->port_def.nBufferSize), comp->name, (guint) port->index);
+- 
+-   if (!port->buffers)
+-     port->buffers = g_ptr_array_sized_new (n);
+--- 
+-1.7.9.5
+-
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.2.0.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.10.4.bb
+similarity index 69%
+rename from meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.2.0.bb
+rename to meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.10.4.bb
+index 74358a7245..dfeefa5579 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.2.0.bb
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_1.10.4.bb
+@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c \
+ 
+ SRC_URI = "http://gstreamer.freedesktop.org/src/gst-omx/gst-omx-${PV}.tar.xz"
+ 
+-SRC_URI[md5sum] = "d24e8c0153c35dfefee3e26b1c2c35f8"
+-SRC_URI[sha256sum] = "0b4874961e6488ad9e5808114bd486ea981c540907262caab1419355fd82d745"
++SRC_URI[md5sum] = "cedb230f1c47d0cf4b575d70dff66ff2"
++SRC_URI[sha256sum] = "45072925cf262f0fd528fab78f0de52734e46a5a88aa802fae51c67c09c81aa2"
+ 
+ S = "${WORKDIR}/gst-omx-${PV}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_git.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_git.bb
+deleted file mode 100644
+index 9705543529..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-omx_git.bb
++++ /dev/null
+@@ -1,25 +0,0 @@
+-DEFAULT_PREFERENCE = "-1"
+-
+-include gstreamer1.0-omx.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c \
+-                    file://omx/gstomx.h;beginline=1;endline=21;md5=5c8e1fca32704488e76d2ba9ddfa935f"
+-
+-SRC_URI = " \
+-    git://anongit.freedesktop.org/gstreamer/gst-omx;branch=master;name=gst-omx \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;branch=master;name=common \
+-    file://0001-omx-fixed-type-error-in-printf-call.patch \
+-"
+-
+-SRCREV_gst-omx = "a2db76b048db278ef0aa798e106b7594264e06c0"
+-SRCREV_common = "5edcd857b2107cd8b78c16232dd10877513ec157"
+-
+-SRCREV_FORMAT = "gst-omx"
+-
+-S = "${WORKDIR}/git"
+-
+-do_configure_prepend() {
+-	cd ${S}
+-	./autogen.sh --noconfigure
+-	cd ${B}
+-}
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad.inc
+index 9e2b94ede8..0ccfc89a2e 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad.inc
+@@ -12,7 +12,7 @@ SRC_URI_append = " \
+ 
+ # opengl packageconfig factored out to make it easy for distros
+ # and BSP layers to pick either (desktop) opengl, gles2, or no GL
+-PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2', '', d)}"
++PACKAGECONFIG_GL ?= "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'gles2 egl', '', d)}"
+ 
+ # gtk is not in the PACKAGECONFIG variable by default until
+ # the transition to gtk+3 is finished
+@@ -20,8 +20,8 @@ PACKAGECONFIG ??= " \
+     ${GSTREAMER_ORC} \
+     ${PACKAGECONFIG_GL} \
+     ${@bb.utils.contains('DISTRO_FEATURES', 'bluetooth', 'bluez', '', d)} \
+-    ${@bb.utils.contains('DISTRO_FEATURES', 'directfb', 'directfb', '', d)} \
+-    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
++    ${@bb.utils.filter('DISTRO_FEATURES', 'directfb', d)} \
++    ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland egl', '', d)} \
+     bz2 curl dash dtls hls neon rsvg sbc smoothstreaming sndfile uvch264 webp \
+ "
+ 
+@@ -30,15 +30,20 @@ PACKAGECONFIG[bluez]           = "--enable-bluez,--disable-bluez,${BLUEZ}"
+ PACKAGECONFIG[bz2]             = "--enable-bz2,--disable-bz2,bzip2"
+ PACKAGECONFIG[curl]            = "--enable-curl,--disable-curl,curl"
+ PACKAGECONFIG[dash]            = "--enable-dash,--disable-dash,libxml2"
++PACKAGECONFIG[dc1394]          = "--enable-dc1394,--disable-dc1394,libdc1394"
+ PACKAGECONFIG[directfb]        = "--enable-directfb,--disable-directfb,directfb"
+ PACKAGECONFIG[dtls]            = "--enable-dtls,--disable-dtls,openssl"
++PACKAGECONFIG[egl]             = "--enable-egl,--disable-egl,virtual/egl"
+ PACKAGECONFIG[faac]            = "--enable-faac,--disable-faac,faac"
+ PACKAGECONFIG[faad]            = "--enable-faad,--disable-faad,faad2"
+ PACKAGECONFIG[flite]           = "--enable-flite,--disable-flite,flite-alsa"
+ PACKAGECONFIG[fluidsynth]      = "--enable-fluidsynth,--disable-fluidsynth,fluidsynth"
+ PACKAGECONFIG[gles2]           = "--enable-gles2,--disable-gles2,virtual/libgles2"
+ PACKAGECONFIG[gtk]             = "--enable-gtk3,--disable-gtk3,gtk+3"
+-PACKAGECONFIG[hls]             = "--enable-hls,--disable-hls,nettle"
++# ensure OpenSSL is used for HLS AES description instead of nettle
++# (OpenSSL is a shared dependency with dtls)
++PACKAGECONFIG[hls]             = "--enable-hls --with-hls-crypto=openssl,--disable-hls,openssl"
++PACKAGECONFIG[kms]             = "--enable-kms,--disable-kms,libdrm"
+ PACKAGECONFIG[libmms]          = "--enable-libmms,--disable-libmms,libmms"
+ PACKAGECONFIG[libssh2]         = "--enable-libssh2,--disable-libssh2,libssh2"
+ PACKAGECONFIG[modplug]         = "--enable-modplug,--disable-modplug,libmodplug"
+@@ -46,7 +51,10 @@ PACKAGECONFIG[neon]            = "--enable-neon,--disable-neon,neon"
+ PACKAGECONFIG[openal]          = "--enable-openal,--disable-openal,openal-soft"
+ PACKAGECONFIG[opencv]          = "--enable-opencv,--disable-opencv,opencv"
+ PACKAGECONFIG[opengl]          = "--enable-opengl,--disable-opengl,virtual/libgl libglu"
+-PACKAGECONFIG[opus]            = "--enable-opus,--disable-opus,libopus"
++PACKAGECONFIG[openjpeg]        = "--enable-openjpeg,--disable-openjpeg,openjpeg"
++# the opus encoder/decoder elements are now in the -base package,
++# but the opus parser remains in -bad
++PACKAGECONFIG[opusparse]       = "--enable-opus,--disable-opus,libopus"
+ PACKAGECONFIG[resindvd]        = "--enable-resindvd,--disable-resindvd,libdvdread libdvdnav"
+ PACKAGECONFIG[rsvg]            = "--enable-rsvg,--disable-rsvg,librsvg"
+ PACKAGECONFIG[rtmp]            = "--enable-rtmp,--disable-rtmp,rtmpdump"
+@@ -58,19 +66,19 @@ PACKAGECONFIG[srtp]            = "--enable-srtp,--disable-srtp,libsrtp"
+ PACKAGECONFIG[uvch264]         = "--enable-uvch264,--disable-uvch264,libusb1 libgudev"
+ PACKAGECONFIG[voaacenc]        = "--enable-voaacenc,--disable-voaacenc,vo-aacenc"
+ PACKAGECONFIG[voamrwbenc]      = "--enable-voamrwbenc,--disable-voamrwbenc,vo-amrwbenc"
+-PACKAGECONFIG[wayland]         = "--enable-wayland --enable-egl,--disable-wayland --disable-egl,wayland virtual/egl"
++PACKAGECONFIG[wayland]         = "--enable-wayland,--disable-wayland,wayland-native wayland wayland-protocols"
+ PACKAGECONFIG[webp]            = "--enable-webp,--disable-webp,libwebp"
+ 
+ # these plugins have not been ported to 1.0 (yet):
+-#   apexsink dc1394 lv2 linsys musepack nas timidity teletextdec sdl xvid wininet
+-#   acm gsettings sndio cdxaparse dccp faceoverlay hdvparse tta mve nuvdemux
+-#   patchdetect real sdi videomeasure gsettings
++#   apexsink linsys nas timidity sdl xvid wininet
++#   sndio cdxaparse dccp faceoverlay hdvparse tta mve nuvdemux
++#   patchdetect sdi videomeasure
+ 
+ # these plugins have no corresponding library in OE-core or meta-openembedded:
+-#   openni2 winks direct3d directsound winscreencap
+-#   apple_media android_media avc bs2b chromaprint daala dts gme gsm kate ladspa
+-#   libde265 mimic mpeg2enc mplex ofa openh264 opensles pvr soundtouch spandsp
+-#   spc vdpau wasapi x265 zbar
++#   openni2 winks direct3d directsound winscreencap acm apple_media
++#   android_media avc bs2b chromaprint daala dts fdkaac gme gsm kate ladspa libde265
++#   lv2 mimic mpeg2enc mplex musepack nvenc ofa openh264 opensles pvr soundtouch spandsp
++#   spc teletextdec tinyalsa vdpau vulkan wasapi x265 zbar
+ 
+ # qt5 support is disabled, because it is not present in OE core, and requires more work than
+ # just adding a packageconfig (it requires access to moc, uic, rcc, and qmake paths).
+@@ -81,6 +89,7 @@ EXTRA_OECONF += " \
+     --enable-decklink \
+     --enable-dvb \
+     --enable-fbdev \
++    --enable-netsim \
+     --enable-shm \
+     --enable-vcd \
+     --disable-acm \
+@@ -92,10 +101,10 @@ EXTRA_OECONF += " \
+     --disable-chromaprint \
+     --disable-cocoa \
+     --disable-daala \
+-    --disable-dc1394 \
+     --disable-direct3d \
+     --disable-directsound \
+     --disable-dts \
++    --disable-fdk_aac \
+     --disable-gme \
+     --disable-gsm \
+     --disable-kate \
+@@ -109,10 +118,10 @@ EXTRA_OECONF += " \
+     --disable-mplex \
+     --disable-musepack \
+     --disable-nas \
++    --disable-nvenc \
+     --disable-ofa \
+     --disable-openexr \
+     --disable-openh264 \
+-    --disable-openjpeg \
+     --disable-openni2 \
+     --disable-opensles \
+     --disable-pvr \
+@@ -125,7 +134,9 @@ EXTRA_OECONF += " \
+     --disable-spc \
+     --disable-teletextdec \
+     --disable-timidity \
++    --disable-tinyalsa \
+     --disable-vdpau \
++    --disable-vulkan \
+     --disable-wasapi \
+     --disable-wildmidi \
+     --disable-wininet \
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch
+index 154d340e4e..695ec0f32c 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch
+@@ -13,24 +13,24 @@ Signed-off-by: Alexander Kanavin <alex.kanavin@gmail.com>
+  gst-libs/gst/mpegts/Makefile.am    | 2 +-
+  3 files changed, 3 insertions(+), 3 deletions(-)
+ 
+-diff --git a/gst-libs/gst/gl/Makefile.am b/gst-libs/gst/gl/Makefile.am
+-index f968357..7cc2c7a 100644
+---- a/gst-libs/gst/gl/Makefile.am
+-+++ b/gst-libs/gst/gl/Makefile.am
+-@@ -149,7 +149,7 @@ GstGL-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstgl-@GST_API_VERSION@
+- 		--library=libgstgl-@GST_API_VERSION@.la \
++Index: gst-plugins-bad-1.10.1/gst-libs/gst/gl/Makefile.am
++===================================================================
++--- gst-plugins-bad-1.10.1.orig/gst-libs/gst/gl/Makefile.am
+++++ gst-plugins-bad-1.10.1/gst-libs/gst/gl/Makefile.am
++@@ -171,7 +171,7 @@ GstGL-@GST_API_VERSION@.gir: $(INTROSPEC
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
++		--include=GstVideo-@GST_API_VERSION@ \
+ -		--libtool="$(top_builddir)/libtool" \
+ +		--libtool="$(LIBTOOL)" \
+  		--pkg gstreamer-@GST_API_VERSION@ \
+  		--pkg gstreamer-base-@GST_API_VERSION@ \
+  		--pkg gstreamer-video-@GST_API_VERSION@ \
+-diff --git a/gst-libs/gst/insertbin/Makefile.am b/gst-libs/gst/insertbin/Makefile.am
+-index 09eb97c..b746885 100644
+---- a/gst-libs/gst/insertbin/Makefile.am
+-+++ b/gst-libs/gst/insertbin/Makefile.am
+-@@ -43,7 +43,7 @@ GstInsertBin-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstinsertbin-@GS
++Index: gst-plugins-bad-1.10.1/gst-libs/gst/insertbin/Makefile.am
++===================================================================
++--- gst-plugins-bad-1.10.1.orig/gst-libs/gst/insertbin/Makefile.am
+++++ gst-plugins-bad-1.10.1/gst-libs/gst/insertbin/Makefile.am
++@@ -45,7 +45,7 @@ GstInsertBin-@GST_API_VERSION@.gir: $(IN
+  		--library=libgstinsertbin-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+@@ -39,11 +39,11 @@ index 09eb97c..b746885 100644
+  		--pkg gstreamer-@GST_API_VERSION@ \
+  		--pkg gstreamer-base-@GST_API_VERSION@ \
+  		--pkg-export gstreamer-insertbin-@GST_API_VERSION@ \
+-diff --git a/gst-libs/gst/mpegts/Makefile.am b/gst-libs/gst/mpegts/Makefile.am
+-index 2511d49..c1cbce6 100644
+---- a/gst-libs/gst/mpegts/Makefile.am
+-+++ b/gst-libs/gst/mpegts/Makefile.am
+-@@ -78,7 +78,7 @@ GstMpegts-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstmpegts-@GST_API_
++Index: gst-plugins-bad-1.10.1/gst-libs/gst/mpegts/Makefile.am
++===================================================================
++--- gst-plugins-bad-1.10.1.orig/gst-libs/gst/mpegts/Makefile.am
+++++ gst-plugins-bad-1.10.1/gst-libs/gst/mpegts/Makefile.am
++@@ -79,7 +79,7 @@ GstMpegts-@GST_API_VERSION@.gir: $(INTRO
+  		--add-include-path=`PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" $(PKG_CONFIG) --variable=girdir gstreamer-video-@GST_API_VERSION@` \
+  		--library=libgstmpegts-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+@@ -52,6 +52,3 @@ index 2511d49..c1cbce6 100644
+  		--pkg gstreamer-@GST_API_VERSION@ \
+  		--pkg gstreamer-video-@GST_API_VERSION@ \
+  		--pkg-export gstreamer-mpegts-@GST_API_VERSION@ \
+--- 
+-2.6.2
+-
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Prepend-PKG_CONFIG_SYSROOT_DIR-to-pkg-config-output.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Prepend-PKG_CONFIG_SYSROOT_DIR-to-pkg-config-output.patch
+new file mode 100644
+index 0000000000..86a4495a85
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-Prepend-PKG_CONFIG_SYSROOT_DIR-to-pkg-config-output.patch
+@@ -0,0 +1,34 @@
++From c271503d7e233428ac0323c51d6517113e26bef7 Mon Sep 17 00:00:00 2001
++From: Khem Raj <raj.khem@gmail.com>
++Date: Thu, 1 Dec 2016 00:27:13 -0800
++Subject: [PATCH] Prepend PKG_CONFIG_SYSROOT_DIR to pkg-config output
++
++In cross environment we have to prepend the sysroot to the path found by
++pkgconfig since the path returned from pkgconfig does not have sysroot prefixed
++it ends up using the files from host system. If build host has wayland installed
++the build will succeed but if you dont have wayland-protocols installed on build host then
++it wont find the files on build host
++
++This should work ok with non sysrooted builds too since in those cases PKG_CONFIG_SYSROOT_DIR
++will be empty
++
++Upstream-Status: Pending
++
++Signed-off-by: Khem Raj <raj.khem@gmail.com>
++---
++ configure.ac | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++Index: gst-plugins-bad-1.10.1/configure.ac
++===================================================================
++--- gst-plugins-bad-1.10.1.orig/configure.ac
+++++ gst-plugins-bad-1.10.1/configure.ac
++@@ -2233,7 +2233,7 @@ AG_GST_CHECK_FEATURE(WAYLAND, [wayland s
++     PKG_CHECK_MODULES(WAYLAND_PROTOCOLS, wayland-protocols >= 1.4, [
++       if test "x$wayland_scanner" != "x"; then
++         HAVE_WAYLAND="yes"
++-        AC_SUBST(WAYLAND_PROTOCOLS_DATADIR, `$PKG_CONFIG --variable=pkgdatadir wayland-protocols`)
+++        AC_SUBST(WAYLAND_PROTOCOLS_DATADIR, ${WAYLAND_PROTOCOLS_SYSROOT_DIR}`$PKG_CONFIG --variable=pkgdatadir wayland-protocols`)
++       else
++         AC_MSG_RESULT([wayland-scanner is required to build the wayland plugin])
++         HAVE_WAYLAND="no"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-gstreamer-gl.pc.in-don-t-append-GL_CFLAGS-to-CFLAGS.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-gstreamer-gl.pc.in-don-t-append-GL_CFLAGS-to-CFLAGS.patch
+index e81b065705..9fc91d8fc4 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-gstreamer-gl.pc.in-don-t-append-GL_CFLAGS-to-CFLAGS.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-gstreamer-gl.pc.in-don-t-append-GL_CFLAGS-to-CFLAGS.patch
+@@ -12,16 +12,13 @@ Signed-off-by: Alexander Kanavin <alex.kanavin@gmail.com>
+  pkgconfig/gstreamer-gl.pc.in | 2 +-
+  1 file changed, 1 insertion(+), 1 deletion(-)
+ 
+-diff --git a/pkgconfig/gstreamer-gl.pc.in b/pkgconfig/gstreamer-gl.pc.in
+-index 5589e2a..b986450 100644
+---- a/pkgconfig/gstreamer-gl.pc.in
+-+++ b/pkgconfig/gstreamer-gl.pc.in
++Index: gst-plugins-bad-1.10.1/pkgconfig/gstreamer-gl.pc.in
++===================================================================
++--- gst-plugins-bad-1.10.1.orig/pkgconfig/gstreamer-gl.pc.in
+++++ gst-plugins-bad-1.10.1/pkgconfig/gstreamer-gl.pc.in
+ @@ -10,4 +10,4 @@ Version: @VERSION@
+  Requires: gstreamer-base-@GST_API_VERSION@ gstreamer-@GST_API_VERSION@
+  
+  Libs: -L${libdir} -lgstgl-@GST_API_VERSION@ @GL_LIBS@
+--Cflags: -I${includedir} @GL_CFLAGS@
+-+Cflags: -I${includedir}
+--- 
+-2.7.0
+-
++-Cflags: -I${includedir} -I${libdir}/gstreamer-@GST_API_VERSION@/include @GL_CFLAGS@
+++Cflags: -I${includedir} -I${libdir}/gstreamer-@GST_API_VERSION@/include
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-mssdemux-improved-live-playback-support.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-mssdemux-improved-live-playback-support.patch
+new file mode 100644
+index 0000000000..fa6e382ab7
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-mssdemux-improved-live-playback-support.patch
+@@ -0,0 +1,928 @@
++From 73721ad4e9e2d32e1c8b6a3b4aaa98401530e58a Mon Sep 17 00:00:00 2001
++From: Philippe Normand <philn@igalia.com>
++Date: Tue, 29 Nov 2016 14:43:41 +0100
++Subject: [PATCH] mssdemux: improved live playback support
++
++When a MSS server hosts a live stream the fragments listed in the
++manifest usually don't have accurate timestamps and duration, except
++for the first fragment, which additionally stores timing information
++for the few upcoming fragments. In this scenario it is useless to
++periodically fetch and update the manifest and the fragments list can
++be incrementally built by parsing the first/current fragment.
++
++https://bugzilla.gnome.org/show_bug.cgi?id=755036
++---
++Upstream-Status: Backport
++Signed-off-by: Khem Raj <raj.khem@gmail.com>
++
++ ext/smoothstreaming/Makefile.am               |   2 +
++ ext/smoothstreaming/gstmssdemux.c             |  60 ++++++
++ ext/smoothstreaming/gstmssfragmentparser.c    | 266 ++++++++++++++++++++++++++
++ ext/smoothstreaming/gstmssfragmentparser.h    |  84 ++++++++
++ ext/smoothstreaming/gstmssmanifest.c          | 158 ++++++++++++++-
++ ext/smoothstreaming/gstmssmanifest.h          |   7 +
++ gst-libs/gst/adaptivedemux/gstadaptivedemux.c |  27 ++-
++ gst-libs/gst/adaptivedemux/gstadaptivedemux.h |  14 ++
++ 8 files changed, 606 insertions(+), 12 deletions(-)
++ create mode 100644 ext/smoothstreaming/gstmssfragmentparser.c
++ create mode 100644 ext/smoothstreaming/gstmssfragmentparser.h
++
++diff --git a/ext/smoothstreaming/Makefile.am b/ext/smoothstreaming/Makefile.am
++index 4faf9df9f..a5e1ad6ae 100644
++--- a/ext/smoothstreaming/Makefile.am
+++++ b/ext/smoothstreaming/Makefile.am
++@@ -13,8 +13,10 @@ libgstsmoothstreaming_la_LIBADD = \
++ libgstsmoothstreaming_la_LDFLAGS = ${GST_PLUGIN_LDFLAGS}
++ libgstsmoothstreaming_la_SOURCES = gstsmoothstreaming-plugin.c \
++	gstmssdemux.c \
+++	gstmssfragmentparser.c \
++	gstmssmanifest.c
++ libgstsmoothstreaming_la_LIBTOOLFLAGS = --tag=disable-static
++
++ noinst_HEADERS = gstmssdemux.h \
+++	gstmssfragmentparser.h \
++	gstmssmanifest.h
++diff --git a/ext/smoothstreaming/gstmssdemux.c b/ext/smoothstreaming/gstmssdemux.c
++index 12fb40497..120d9c22b 100644
++--- a/ext/smoothstreaming/gstmssdemux.c
+++++ b/ext/smoothstreaming/gstmssdemux.c
++@@ -135,11 +135,18 @@ gst_mss_demux_stream_update_fragment_info (GstAdaptiveDemuxStream * stream);
++ static gboolean gst_mss_demux_seek (GstAdaptiveDemux * demux, GstEvent * seek);
++ static gint64
++ gst_mss_demux_get_manifest_update_interval (GstAdaptiveDemux * demux);
+++static gint64
+++gst_mss_demux_stream_get_fragment_waiting_time (GstAdaptiveDemuxStream *
+++    stream);
++ static GstFlowReturn
++ gst_mss_demux_update_manifest_data (GstAdaptiveDemux * demux,
++     GstBuffer * buffer);
++ static gboolean gst_mss_demux_get_live_seek_range (GstAdaptiveDemux * demux,
++     gint64 * start, gint64 * stop);
+++static GstFlowReturn gst_mss_demux_data_received (GstAdaptiveDemux * demux,
+++    GstAdaptiveDemuxStream * stream, GstBuffer * buffer);
+++static gboolean
+++gst_mss_demux_requires_periodical_playlist_update (GstAdaptiveDemux * demux);
++
++ static void
++ gst_mss_demux_class_init (GstMssDemuxClass * klass)
++@@ -192,10 +199,15 @@ gst_mss_demux_class_init (GstMssDemuxClass * klass)
++       gst_mss_demux_stream_select_bitrate;
++   gstadaptivedemux_class->stream_update_fragment_info =
++       gst_mss_demux_stream_update_fragment_info;
+++  gstadaptivedemux_class->stream_get_fragment_waiting_time =
+++      gst_mss_demux_stream_get_fragment_waiting_time;
++   gstadaptivedemux_class->update_manifest_data =
++       gst_mss_demux_update_manifest_data;
++   gstadaptivedemux_class->get_live_seek_range =
++       gst_mss_demux_get_live_seek_range;
+++  gstadaptivedemux_class->data_received = gst_mss_demux_data_received;
+++  gstadaptivedemux_class->requires_periodical_playlist_update =
+++      gst_mss_demux_requires_periodical_playlist_update;
++
++   GST_DEBUG_CATEGORY_INIT (mssdemux_debug, "mssdemux", 0, "mssdemux plugin");
++ }
++@@ -650,6 +662,13 @@ gst_mss_demux_get_manifest_update_interval (GstAdaptiveDemux * demux)
++   return interval;
++ }
++
+++static gint64
+++gst_mss_demux_stream_get_fragment_waiting_time (GstAdaptiveDemuxStream * stream)
+++{
+++  /* Wait a second for live streams so we don't try premature fragments downloading */
+++  return GST_SECOND;
+++}
+++
++ static GstFlowReturn
++ gst_mss_demux_update_manifest_data (GstAdaptiveDemux * demux,
++     GstBuffer * buffer)
++@@ -670,3 +689,44 @@ gst_mss_demux_get_live_seek_range (GstAdaptiveDemux * demux, gint64 * start,
++
++   return gst_mss_manifest_get_live_seek_range (mssdemux->manifest, start, stop);
++ }
+++
+++static GstFlowReturn
+++gst_mss_demux_data_received (GstAdaptiveDemux * demux,
+++    GstAdaptiveDemuxStream * stream, GstBuffer * buffer)
+++{
+++  GstMssDemux *mssdemux = GST_MSS_DEMUX_CAST (demux);
+++  GstMssDemuxStream *mssstream = (GstMssDemuxStream *) stream;
+++  gsize available;
+++
+++  if (!gst_mss_manifest_is_live (mssdemux->manifest)) {
+++    return GST_ADAPTIVE_DEMUX_CLASS (parent_class)->data_received (demux,
+++        stream, buffer);
+++  }
+++
+++  if (gst_mss_stream_fragment_parsing_needed (mssstream->manifest_stream)) {
+++    gst_mss_manifest_live_adapter_push (mssstream->manifest_stream, buffer);
+++    available =
+++        gst_mss_manifest_live_adapter_available (mssstream->manifest_stream);
+++    // FIXME: try to reduce this minimal size.
+++    if (available < 4096) {
+++      return GST_FLOW_OK;
+++    } else {
+++      GST_LOG_OBJECT (stream->pad, "enough data, parsing fragment.");
+++      buffer =
+++          gst_mss_manifest_live_adapter_take_buffer (mssstream->manifest_stream,
+++          available);
+++      gst_mss_stream_parse_fragment (mssstream->manifest_stream, buffer);
+++    }
+++  }
+++
+++  return GST_ADAPTIVE_DEMUX_CLASS (parent_class)->data_received (demux, stream,
+++      buffer);
+++}
+++
+++static gboolean
+++gst_mss_demux_requires_periodical_playlist_update (GstAdaptiveDemux * demux)
+++{
+++  GstMssDemux *mssdemux = GST_MSS_DEMUX_CAST (demux);
+++
+++  return (!gst_mss_manifest_is_live (mssdemux->manifest));
+++}
++diff --git a/ext/smoothstreaming/gstmssfragmentparser.c b/ext/smoothstreaming/gstmssfragmentparser.c
++new file mode 100644
++index 000000000..b554d4f31
++--- /dev/null
+++++ b/ext/smoothstreaming/gstmssfragmentparser.c
++@@ -0,0 +1,266 @@
+++/*
+++ * Microsoft Smooth-Streaming fragment parsing library
+++ *
+++ * gstmssfragmentparser.h
+++ *
+++ * Copyright (C) 2016 Igalia S.L
+++ * Copyright (C) 2016 Metrological
+++ *   Author: Philippe Normand <philn@igalia.com>
+++ *
+++ * This library is free software; you can redistribute it and/or
+++ * modify it under the terms of the GNU Library General Public
+++ * License as published by the Free Software Foundation; either
+++ * version 2.1 of the License, or (at your option) any later version.
+++ *
+++ * This library is distributed in the hope that it will be useful,
+++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+++ * Library General Public License for more details.
+++ *
+++ * You should have received a copy of the GNU Library General Public
+++ * License along with this library (COPYING); if not, write to the
+++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+++ * Boston, MA 02111-1307, USA.
+++ */
+++
+++#include "gstmssfragmentparser.h"
+++#include <gst/base/gstbytereader.h>
+++#include <string.h>
+++
+++GST_DEBUG_CATEGORY_EXTERN (mssdemux_debug);
+++#define GST_CAT_DEFAULT mssdemux_debug
+++
+++void
+++gst_mss_fragment_parser_init (GstMssFragmentParser * parser)
+++{
+++  parser->status = GST_MSS_FRAGMENT_HEADER_PARSER_INIT;
+++  parser->tfrf.entries_count = 0;
+++}
+++
+++void
+++gst_mss_fragment_parser_clear (GstMssFragmentParser * parser)
+++{
+++  parser->tfrf.entries_count = 0;
+++  if (parser->tfrf.entries) {
+++    g_free (parser->tfrf.entries);
+++    parser->tfrf.entries = 0;
+++  }
+++}
+++
+++static gboolean
+++_parse_tfrf_box (GstMssFragmentParser * parser, GstByteReader * reader)
+++{
+++  guint8 version;
+++  guint32 flags = 0;
+++  guint8 fragment_count = 0;
+++  guint8 index = 0;
+++
+++  if (!gst_byte_reader_get_uint8 (reader, &version)) {
+++    GST_ERROR ("Error getting box's version field");
+++    return FALSE;
+++  }
+++
+++  if (!gst_byte_reader_get_uint24_be (reader, &flags)) {
+++    GST_ERROR ("Error getting box's flags field");
+++    return FALSE;
+++  }
+++
+++  gst_byte_reader_get_uint8 (reader, &fragment_count);
+++  parser->tfrf.entries_count = fragment_count;
+++  parser->tfrf.entries =
+++      g_malloc (sizeof (GstTfrfBoxEntry) * parser->tfrf.entries_count);
+++  for (index = 0; index < fragment_count; index++) {
+++    guint64 absolute_time = 0;
+++    guint64 absolute_duration = 0;
+++    if (version & 0x01) {
+++      gst_byte_reader_get_uint64_be (reader, &absolute_time);
+++      gst_byte_reader_get_uint64_be (reader, &absolute_duration);
+++    } else {
+++      guint32 time = 0;
+++      guint32 duration = 0;
+++      gst_byte_reader_get_uint32_be (reader, &time);
+++      gst_byte_reader_get_uint32_be (reader, &duration);
+++      time = ~time;
+++      duration = ~duration;
+++      absolute_time = ~time;
+++      absolute_duration = ~duration;
+++    }
+++    parser->tfrf.entries[index].time = absolute_time;
+++    parser->tfrf.entries[index].duration = absolute_duration;
+++  }
+++
+++  GST_LOG ("tfrf box parsed");
+++  return TRUE;
+++}
+++
+++static gboolean
+++_parse_tfxd_box (GstMssFragmentParser * parser, GstByteReader * reader)
+++{
+++  guint8 version;
+++  guint32 flags = 0;
+++  guint64 absolute_time = 0;
+++  guint64 absolute_duration = 0;
+++
+++  if (!gst_byte_reader_get_uint8 (reader, &version)) {
+++    GST_ERROR ("Error getting box's version field");
+++    return FALSE;
+++  }
+++
+++  if (!gst_byte_reader_get_uint24_be (reader, &flags)) {
+++    GST_ERROR ("Error getting box's flags field");
+++    return FALSE;
+++  }
+++
+++  if (version & 0x01) {
+++    gst_byte_reader_get_uint64_be (reader, &absolute_time);
+++    gst_byte_reader_get_uint64_be (reader, &absolute_duration);
+++  } else {
+++    guint32 time = 0;
+++    guint32 duration = 0;
+++    gst_byte_reader_get_uint32_be (reader, &time);
+++    gst_byte_reader_get_uint32_be (reader, &duration);
+++    time = ~time;
+++    duration = ~duration;
+++    absolute_time = ~time;
+++    absolute_duration = ~duration;
+++  }
+++
+++  parser->tfxd.time = absolute_time;
+++  parser->tfxd.duration = absolute_duration;
+++  GST_LOG ("tfxd box parsed");
+++  return TRUE;
+++}
+++
+++gboolean
+++gst_mss_fragment_parser_add_buffer (GstMssFragmentParser * parser,
+++    GstBuffer * buffer)
+++{
+++  GstByteReader reader;
+++  GstMapInfo info;
+++  guint32 size;
+++  guint32 fourcc;
+++  const guint8 *uuid;
+++  gboolean error = FALSE;
+++  gboolean mdat_box_found = FALSE;
+++
+++  static const guint8 tfrf_uuid[] = {
+++    0xd4, 0x80, 0x7e, 0xf2, 0xca, 0x39, 0x46, 0x95,
+++    0x8e, 0x54, 0x26, 0xcb, 0x9e, 0x46, 0xa7, 0x9f
+++  };
+++
+++  static const guint8 tfxd_uuid[] = {
+++    0x6d, 0x1d, 0x9b, 0x05, 0x42, 0xd5, 0x44, 0xe6,
+++    0x80, 0xe2, 0x14, 0x1d, 0xaf, 0xf7, 0x57, 0xb2
+++  };
+++
+++  static const guint8 piff_uuid[] = {
+++    0xa2, 0x39, 0x4f, 0x52, 0x5a, 0x9b, 0x4f, 0x14,
+++    0xa2, 0x44, 0x6c, 0x42, 0x7c, 0x64, 0x8d, 0xf4
+++  };
+++
+++  if (!gst_buffer_map (buffer, &info, GST_MAP_READ)) {
+++    return FALSE;
+++  }
+++
+++  gst_byte_reader_init (&reader, info.data, info.size);
+++  GST_TRACE ("Total buffer size: %u", gst_byte_reader_get_size (&reader));
+++
+++  size = gst_byte_reader_get_uint32_be_unchecked (&reader);
+++  fourcc = gst_byte_reader_get_uint32_le_unchecked (&reader);
+++  if (fourcc == GST_MSS_FRAGMENT_FOURCC_MOOF) {
+++    GST_TRACE ("moof box found");
+++    size = gst_byte_reader_get_uint32_be_unchecked (&reader);
+++    fourcc = gst_byte_reader_get_uint32_le_unchecked (&reader);
+++    if (fourcc == GST_MSS_FRAGMENT_FOURCC_MFHD) {
+++      gst_byte_reader_skip_unchecked (&reader, size - 8);
+++
+++      size = gst_byte_reader_get_uint32_be_unchecked (&reader);
+++      fourcc = gst_byte_reader_get_uint32_le_unchecked (&reader);
+++      if (fourcc == GST_MSS_FRAGMENT_FOURCC_TRAF) {
+++        size = gst_byte_reader_get_uint32_be_unchecked (&reader);
+++        fourcc = gst_byte_reader_get_uint32_le_unchecked (&reader);
+++        if (fourcc == GST_MSS_FRAGMENT_FOURCC_TFHD) {
+++          gst_byte_reader_skip_unchecked (&reader, size - 8);
+++
+++          size = gst_byte_reader_get_uint32_be_unchecked (&reader);
+++          fourcc = gst_byte_reader_get_uint32_le_unchecked (&reader);
+++          if (fourcc == GST_MSS_FRAGMENT_FOURCC_TRUN) {
+++            GST_TRACE ("trun box found, size: %" G_GUINT32_FORMAT, size);
+++            if (!gst_byte_reader_skip (&reader, size - 8)) {
+++              GST_WARNING ("Failed to skip trun box, enough data?");
+++              error = TRUE;
+++              goto beach;
+++            }
+++          }
+++        }
+++      }
+++    }
+++  }
+++
+++  while (!mdat_box_found) {
+++    GST_TRACE ("remaining data: %u", gst_byte_reader_get_remaining (&reader));
+++    if (!gst_byte_reader_get_uint32_be (&reader, &size)) {
+++      GST_WARNING ("Failed to get box size, enough data?");
+++      error = TRUE;
+++      break;
+++    }
+++
+++    GST_TRACE ("box size: %" G_GUINT32_FORMAT, size);
+++    if (!gst_byte_reader_get_uint32_le (&reader, &fourcc)) {
+++      GST_WARNING ("Failed to get fourcc, enough data?");
+++      error = TRUE;
+++      break;
+++    }
+++
+++    if (fourcc == GST_MSS_FRAGMENT_FOURCC_MDAT) {
+++      GST_LOG ("mdat box found");
+++      mdat_box_found = TRUE;
+++      break;
+++    }
+++
+++    if (fourcc != GST_MSS_FRAGMENT_FOURCC_UUID) {
+++      GST_ERROR ("invalid UUID fourcc: %" GST_FOURCC_FORMAT,
+++          GST_FOURCC_ARGS (fourcc));
+++      error = TRUE;
+++      break;
+++    }
+++
+++    if (!gst_byte_reader_peek_data (&reader, 16, &uuid)) {
+++      GST_ERROR ("not enough data in UUID box");
+++      error = TRUE;
+++      break;
+++    }
+++
+++    if (memcmp (uuid, piff_uuid, 16) == 0) {
+++      gst_byte_reader_skip_unchecked (&reader, size - 8);
+++      GST_LOG ("piff box detected");
+++    }
+++
+++    if (memcmp (uuid, tfrf_uuid, 16) == 0) {
+++      gst_byte_reader_get_data (&reader, 16, &uuid);
+++      if (!_parse_tfrf_box (parser, &reader)) {
+++        GST_ERROR ("txrf box parsing error");
+++        error = TRUE;
+++        break;
+++      }
+++    }
+++
+++    if (memcmp (uuid, tfxd_uuid, 16) == 0) {
+++      gst_byte_reader_get_data (&reader, 16, &uuid);
+++      if (!_parse_tfxd_box (parser, &reader)) {
+++        GST_ERROR ("tfrf box parsing error");
+++        error = TRUE;
+++        break;
+++      }
+++    }
+++  }
+++
+++beach:
+++
+++  if (!error)
+++    parser->status = GST_MSS_FRAGMENT_HEADER_PARSER_FINISHED;
+++
+++  GST_LOG ("Fragment parsing successful: %s", error ? "no" : "yes");
+++  gst_buffer_unmap (buffer, &info);
+++  return !error;
+++}
++diff --git a/ext/smoothstreaming/gstmssfragmentparser.h b/ext/smoothstreaming/gstmssfragmentparser.h
++new file mode 100644
++index 000000000..cf4711865
++--- /dev/null
+++++ b/ext/smoothstreaming/gstmssfragmentparser.h
++@@ -0,0 +1,84 @@
+++/*
+++ * Microsoft Smooth-Streaming fragment parsing library
+++ *
+++ * gstmssfragmentparser.h
+++ *
+++ * Copyright (C) 2016 Igalia S.L
+++ * Copyright (C) 2016 Metrological
+++ *   Author: Philippe Normand <philn@igalia.com>
+++ *
+++ * This library is free software; you can redistribute it and/or
+++ * modify it under the terms of the GNU Library General Public
+++ * License as published by the Free Software Foundation; either
+++ * version 2.1 of the License, or (at your option) any later version.
+++ *
+++ * This library is distributed in the hope that it will be useful,
+++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+++ * Library General Public License for more details.
+++ *
+++ * You should have received a copy of the GNU Library General Public
+++ * License along with this library (COPYING); if not, write to the
+++ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+++ * Boston, MA 02111-1307, USA.
+++ */
+++
+++#ifndef __GST_MSS_FRAGMENT_PARSER_H__
+++#define __GST_MSS_FRAGMENT_PARSER_H__
+++
+++#include <gst/gst.h>
+++
+++G_BEGIN_DECLS
+++
+++#define GST_MSS_FRAGMENT_FOURCC_MOOF GST_MAKE_FOURCC('m','o','o','f')
+++#define GST_MSS_FRAGMENT_FOURCC_MFHD GST_MAKE_FOURCC('m','f','h','d')
+++#define GST_MSS_FRAGMENT_FOURCC_TRAF GST_MAKE_FOURCC('t','r','a','f')
+++#define GST_MSS_FRAGMENT_FOURCC_TFHD GST_MAKE_FOURCC('t','f','h','d')
+++#define GST_MSS_FRAGMENT_FOURCC_TRUN GST_MAKE_FOURCC('t','r','u','n')
+++#define GST_MSS_FRAGMENT_FOURCC_UUID GST_MAKE_FOURCC('u','u','i','d')
+++#define GST_MSS_FRAGMENT_FOURCC_MDAT GST_MAKE_FOURCC('m','d','a','t')
+++
+++typedef struct _GstTfxdBox
+++{
+++  guint8 version;
+++  guint32 flags;
+++
+++  guint64 time;
+++  guint64 duration;
+++} GstTfxdBox;
+++
+++typedef struct _GstTfrfBoxEntry
+++{
+++  guint64 time;
+++  guint64 duration;
+++} GstTfrfBoxEntry;
+++
+++typedef struct _GstTfrfBox
+++{
+++  guint8 version;
+++  guint32 flags;
+++
+++  gint entries_count;
+++  GstTfrfBoxEntry *entries;
+++} GstTfrfBox;
+++
+++typedef enum _GstFragmentHeaderParserStatus
+++{
+++  GST_MSS_FRAGMENT_HEADER_PARSER_INIT,
+++  GST_MSS_FRAGMENT_HEADER_PARSER_FINISHED
+++} GstFragmentHeaderParserStatus;
+++
+++typedef struct _GstMssFragmentParser
+++{
+++  GstFragmentHeaderParserStatus status;
+++  GstTfxdBox tfxd;
+++  GstTfrfBox tfrf;
+++} GstMssFragmentParser;
+++
+++void gst_mss_fragment_parser_init (GstMssFragmentParser * parser);
+++void gst_mss_fragment_parser_clear (GstMssFragmentParser * parser);
+++gboolean gst_mss_fragment_parser_add_buffer (GstMssFragmentParser * parser, GstBuffer * buf);
+++
+++G_END_DECLS
+++
+++#endif /* __GST_MSS_FRAGMENT_PARSER_H__ */
++diff --git a/ext/smoothstreaming/gstmssmanifest.c b/ext/smoothstreaming/gstmssmanifest.c
++index 144bbb42d..e1031ba55 100644
++--- a/ext/smoothstreaming/gstmssmanifest.c
+++++ b/ext/smoothstreaming/gstmssmanifest.c
++@@ -1,5 +1,7 @@
++ /* GStreamer
++  * Copyright (C) 2012 Smart TV Alliance
+++ * Copyright (C) 2016 Igalia S.L
+++ * Copyright (C) 2016 Metrological
++  *  Author: Thiago Sousa Santos <thiago.sousa.santos@collabora.com>, Collabora Ltd.
++  *
++  * gstmssmanifest.c:
++@@ -31,6 +33,7 @@
++ #include <gst/codecparsers/gsth264parser.h>
++
++ #include "gstmssmanifest.h"
+++#include "gstmssfragmentparser.h"
++
++ GST_DEBUG_CATEGORY_EXTERN (mssdemux_debug);
++ #define GST_CAT_DEFAULT mssdemux_debug
++@@ -74,12 +77,17 @@ struct _GstMssStream
++   gboolean active;              /* if the stream is currently being used */
++   gint selectedQualityIndex;
++
+++  gboolean has_live_fragments;
+++  GstAdapter *live_adapter;
+++
++   GList *fragments;
++   GList *qualities;
++
++   gchar *url;
++   gchar *lang;
++
+++  GstMssFragmentParser fragment_parser;
+++
++   guint fragment_repetition_index;
++   GList *current_fragment;
++   GList *current_quality;
++@@ -96,6 +104,7 @@ struct _GstMssManifest
++
++   gboolean is_live;
++   gint64 dvr_window;
+++  guint64 look_ahead_fragment_count;
++
++   GString *protection_system_id;
++   gchar *protection_data;
++@@ -235,7 +244,8 @@ compare_bitrate (GstMssStreamQuality * a, GstMssStreamQuality * b)
++ }
++
++ static void
++-_gst_mss_stream_init (GstMssStream * stream, xmlNodePtr node)
+++_gst_mss_stream_init (GstMssManifest * manifest, GstMssStream * stream,
+++    xmlNodePtr node)
++ {
++   xmlNodePtr iter;
++   GstMssFragmentListBuilder builder;
++@@ -248,9 +258,21 @@ _gst_mss_stream_init (GstMssStream * stream, xmlNodePtr node)
++   stream->url = (gchar *) xmlGetProp (node, (xmlChar *) MSS_PROP_URL);
++   stream->lang = (gchar *) xmlGetProp (node, (xmlChar *) MSS_PROP_LANGUAGE);
++
+++  /* for live playback each fragment usually has timing
+++   * information for the few next look-ahead fragments so the
+++   * playlist can be built incrementally from the first fragment
+++   * of the manifest.
+++   */
+++
+++  GST_DEBUG ("Live stream: %s, look-ahead fragments: %" G_GUINT64_FORMAT,
+++      manifest->is_live ? "yes" : "no", manifest->look_ahead_fragment_count);
+++  stream->has_live_fragments = manifest->is_live
+++      && manifest->look_ahead_fragment_count;
+++
++   for (iter = node->children; iter; iter = iter->next) {
++     if (node_has_type (iter, MSS_NODE_STREAM_FRAGMENT)) {
++-      gst_mss_fragment_list_builder_add (&builder, iter);
+++      if (!stream->has_live_fragments || !builder.fragments)
+++        gst_mss_fragment_list_builder_add (&builder, iter);
++     } else if (node_has_type (iter, MSS_NODE_STREAM_QUALITY)) {
++       GstMssStreamQuality *quality = gst_mss_stream_quality_new (iter);
++       stream->qualities = g_list_prepend (stream->qualities, quality);
++@@ -259,17 +281,24 @@ _gst_mss_stream_init (GstMssStream * stream, xmlNodePtr node)
++     }
++   }
++
++-  stream->fragments = g_list_reverse (builder.fragments);
+++  if (stream->has_live_fragments) {
+++    stream->live_adapter = gst_adapter_new ();
+++  }
+++
+++  if (builder.fragments) {
+++    stream->fragments = g_list_reverse (builder.fragments);
+++    stream->current_fragment = stream->fragments;
+++  }
++
++   /* order them from smaller to bigger based on bitrates */
++   stream->qualities =
++       g_list_sort (stream->qualities, (GCompareFunc) compare_bitrate);
++-
++-  stream->current_fragment = stream->fragments;
++   stream->current_quality = stream->qualities;
++
++   stream->regex_bitrate = g_regex_new ("\\{[Bb]itrate\\}", 0, 0, NULL);
++   stream->regex_position = g_regex_new ("\\{start[ _]time\\}", 0, 0, NULL);
+++
+++  gst_mss_fragment_parser_init (&stream->fragment_parser);
++ }
++
++
++@@ -315,6 +344,7 @@ gst_mss_manifest_new (GstBuffer * data)
++   xmlNodePtr nodeiter;
++   gchar *live_str;
++   GstMapInfo mapinfo;
+++  gchar *look_ahead_fragment_count_str;
++
++   if (!gst_buffer_map (data, &mapinfo, GST_MAP_READ)) {
++     return NULL;
++@@ -335,6 +365,7 @@ gst_mss_manifest_new (GstBuffer * data)
++   /* the entire file is always available for non-live streams */
++   if (!manifest->is_live) {
++     manifest->dvr_window = 0;
+++    manifest->look_ahead_fragment_count = 0;
++   } else {
++     /* if 0, or non-existent, the length is infinite */
++     gchar *dvr_window_str = (gchar *) xmlGetProp (root,
++@@ -346,6 +377,17 @@ gst_mss_manifest_new (GstBuffer * data)
++         manifest->dvr_window = 0;
++       }
++     }
+++
+++    look_ahead_fragment_count_str =
+++        (gchar *) xmlGetProp (root, (xmlChar *) "LookAheadFragmentCount");
+++    if (look_ahead_fragment_count_str) {
+++      manifest->look_ahead_fragment_count =
+++          g_ascii_strtoull (look_ahead_fragment_count_str, NULL, 10);
+++      xmlFree (look_ahead_fragment_count_str);
+++      if (manifest->look_ahead_fragment_count <= 0) {
+++        manifest->look_ahead_fragment_count = 0;
+++      }
+++    }
++   }
++
++   for (nodeiter = root->children; nodeiter; nodeiter = nodeiter->next) {
++@@ -354,7 +396,7 @@ gst_mss_manifest_new (GstBuffer * data)
++       GstMssStream *stream = g_new0 (GstMssStream, 1);
++
++       manifest->streams = g_slist_append (manifest->streams, stream);
++-      _gst_mss_stream_init (stream, nodeiter);
+++      _gst_mss_stream_init (manifest, stream, nodeiter);
++     }
++
++     if (nodeiter->type == XML_ELEMENT_NODE
++@@ -371,6 +413,11 @@ gst_mss_manifest_new (GstBuffer * data)
++ static void
++ gst_mss_stream_free (GstMssStream * stream)
++ {
+++  if (stream->live_adapter) {
+++    gst_adapter_clear (stream->live_adapter);
+++    g_object_unref (stream->live_adapter);
+++  }
+++
++   g_list_free_full (stream->fragments, g_free);
++   g_list_free_full (stream->qualities,
++       (GDestroyNotify) gst_mss_stream_quality_free);
++@@ -379,6 +426,7 @@ gst_mss_stream_free (GstMssStream * stream)
++   g_regex_unref (stream->regex_position);
++   g_regex_unref (stream->regex_bitrate);
++   g_free (stream);
+++  gst_mss_fragment_parser_clear (&stream->fragment_parser);
++ }
++
++ void
++@@ -1079,6 +1127,9 @@ GstFlowReturn
++ gst_mss_stream_advance_fragment (GstMssStream * stream)
++ {
++   GstMssStreamFragment *fragment;
+++  const gchar *stream_type_name =
+++      gst_mss_stream_type_name (gst_mss_stream_get_type (stream));
+++
++   g_return_val_if_fail (stream->active, GST_FLOW_ERROR);
++
++   if (stream->current_fragment == NULL)
++@@ -1086,14 +1137,20 @@ gst_mss_stream_advance_fragment (GstMssStream * stream)
++
++   fragment = stream->current_fragment->data;
++   stream->fragment_repetition_index++;
++-  if (stream->fragment_repetition_index < fragment->repetitions) {
++-    return GST_FLOW_OK;
++-  }
+++  if (stream->fragment_repetition_index < fragment->repetitions)
+++    goto beach;
++
++   stream->fragment_repetition_index = 0;
++   stream->current_fragment = g_list_next (stream->current_fragment);
+++
+++  GST_DEBUG ("Advanced to fragment #%d on %s stream", fragment->number,
+++      stream_type_name);
++   if (stream->current_fragment == NULL)
++     return GST_FLOW_EOS;
+++
+++beach:
+++  gst_mss_fragment_parser_clear (&stream->fragment_parser);
+++  gst_mss_fragment_parser_init (&stream->fragment_parser);
++   return GST_FLOW_OK;
++ }
++
++@@ -1173,6 +1230,11 @@ gst_mss_stream_seek (GstMssStream * stream, gboolean forward,
++   GST_DEBUG ("Stream %s seeking to %" G_GUINT64_FORMAT, stream->url, time);
++   for (iter = stream->fragments; iter; iter = g_list_next (iter)) {
++     fragment = iter->data;
+++    if (stream->has_live_fragments) {
+++      if (fragment->time + fragment->repetitions * fragment->duration > time)
+++        stream->current_fragment = iter;
+++      break;
+++    }
++     if (fragment->time + fragment->repetitions * fragment->duration > time) {
++       stream->current_fragment = iter;
++       stream->fragment_repetition_index =
++@@ -1256,9 +1318,14 @@ static void
++ gst_mss_stream_reload_fragments (GstMssStream * stream, xmlNodePtr streamIndex)
++ {
++   xmlNodePtr iter;
++-  guint64 current_gst_time = gst_mss_stream_get_fragment_gst_timestamp (stream);
+++  guint64 current_gst_time;
++   GstMssFragmentListBuilder builder;
++
+++  if (stream->has_live_fragments)
+++    return;
+++
+++  current_gst_time = gst_mss_stream_get_fragment_gst_timestamp (stream);
+++
++   gst_mss_fragment_list_builder_init (&builder);
++
++   GST_DEBUG ("Current position: %" GST_TIME_FORMAT,
++@@ -1514,3 +1581,74 @@ gst_mss_manifest_get_live_seek_range (GstMssManifest * manifest, gint64 * start,
++
++   return ret;
++ }
+++
+++void
+++gst_mss_manifest_live_adapter_push (GstMssStream * stream, GstBuffer * buffer)
+++{
+++  gst_adapter_push (stream->live_adapter, buffer);
+++}
+++
+++gsize
+++gst_mss_manifest_live_adapter_available (GstMssStream * stream)
+++{
+++  return gst_adapter_available (stream->live_adapter);
+++}
+++
+++GstBuffer *
+++gst_mss_manifest_live_adapter_take_buffer (GstMssStream * stream, gsize nbytes)
+++{
+++  return gst_adapter_take_buffer (stream->live_adapter, nbytes);
+++}
+++
+++gboolean
+++gst_mss_stream_fragment_parsing_needed (GstMssStream * stream)
+++{
+++  return stream->fragment_parser.status == GST_MSS_FRAGMENT_HEADER_PARSER_INIT;
+++}
+++
+++void
+++gst_mss_stream_parse_fragment (GstMssStream * stream, GstBuffer * buffer)
+++{
+++  GstMssStreamFragment *current_fragment = NULL;
+++  const gchar *stream_type_name;
+++  guint8 index;
+++
+++  if (!stream->has_live_fragments)
+++    return;
+++
+++  if (!gst_mss_fragment_parser_add_buffer (&stream->fragment_parser, buffer))
+++    return;
+++
+++  current_fragment = stream->current_fragment->data;
+++  current_fragment->time = stream->fragment_parser.tfxd.time;
+++  current_fragment->duration = stream->fragment_parser.tfxd.duration;
+++
+++  stream_type_name =
+++      gst_mss_stream_type_name (gst_mss_stream_get_type (stream));
+++
+++  for (index = 0; index < stream->fragment_parser.tfrf.entries_count; index++) {
+++    GList *l = g_list_last (stream->fragments);
+++    GstMssStreamFragment *last;
+++    GstMssStreamFragment *fragment;
+++
+++    if (l == NULL)
+++      break;
+++
+++    last = (GstMssStreamFragment *) l->data;
+++
+++    if (last->time == stream->fragment_parser.tfrf.entries[index].time)
+++      continue;
+++
+++    fragment = g_new (GstMssStreamFragment, 1);
+++    fragment->number = last->number + 1;
+++    fragment->repetitions = 1;
+++    fragment->time = stream->fragment_parser.tfrf.entries[index].time;
+++    fragment->duration = stream->fragment_parser.tfrf.entries[index].duration;
+++
+++    stream->fragments = g_list_append (stream->fragments, fragment);
+++    GST_LOG ("Adding fragment number: %u to %s stream, time: %" G_GUINT64_FORMAT
+++        ", duration: %" G_GUINT64_FORMAT ", repetitions: %u",
+++        fragment->number, stream_type_name,
+++        fragment->time, fragment->duration, fragment->repetitions);
+++  }
+++}
++diff --git a/ext/smoothstreaming/gstmssmanifest.h b/ext/smoothstreaming/gstmssmanifest.h
++index 6b7b1f971..03b066ae5 100644
++--- a/ext/smoothstreaming/gstmssmanifest.h
+++++ b/ext/smoothstreaming/gstmssmanifest.h
++@@ -26,6 +26,7 @@
++ #include <glib.h>
++ #include <gio/gio.h>
++ #include <gst/gst.h>
+++#include <gst/base/gstadapter.h>
++
++ G_BEGIN_DECLS
++
++@@ -73,5 +74,11 @@ const gchar * gst_mss_stream_get_lang (GstMssStream * stream);
++
++ const gchar * gst_mss_stream_type_name (GstMssStreamType streamtype);
++
+++void gst_mss_manifest_live_adapter_push(GstMssStream * stream, GstBuffer * buffer);
+++gsize gst_mss_manifest_live_adapter_available(GstMssStream * stream);
+++GstBuffer * gst_mss_manifest_live_adapter_take_buffer(GstMssStream * stream, gsize nbytes);
+++gboolean gst_mss_stream_fragment_parsing_needed(GstMssStream * stream);
+++void gst_mss_stream_parse_fragment(GstMssStream * stream, GstBuffer * buffer);
+++
++ G_END_DECLS
++ #endif /* __GST_MSS_MANIFEST_H__ */
++diff --git a/gst-libs/gst/adaptivedemux/gstadaptivedemux.c b/gst-libs/gst/adaptivedemux/gstadaptivedemux.c
++index 634e4f388..ddca726b6 100644
++--- a/gst-libs/gst/adaptivedemux/gstadaptivedemux.c
+++++ b/gst-libs/gst/adaptivedemux/gstadaptivedemux.c
++@@ -291,6 +291,9 @@ gst_adaptive_demux_wait_until (GstClock * clock, GCond * cond, GMutex * mutex,
++     GstClockTime end_time);
++ static gboolean gst_adaptive_demux_clock_callback (GstClock * clock,
++     GstClockTime time, GstClockID id, gpointer user_data);
+++static gboolean
+++gst_adaptive_demux_requires_periodical_playlist_update_default (GstAdaptiveDemux
+++    * demux);
++
++ /* we can't use G_DEFINE_ABSTRACT_TYPE because we need the klass in the _init
++  * method to get to the padtemplates */
++@@ -412,6 +415,9 @@ gst_adaptive_demux_class_init (GstAdaptiveDemuxClass * klass)
++   klass->data_received = gst_adaptive_demux_stream_data_received_default;
++   klass->finish_fragment = gst_adaptive_demux_stream_finish_fragment_default;
++   klass->update_manifest = gst_adaptive_demux_update_manifest_default;
+++  klass->requires_periodical_playlist_update =
+++      gst_adaptive_demux_requires_periodical_playlist_update_default;
+++
++ }
++
++ static void
++@@ -686,7 +692,9 @@ gst_adaptive_demux_sink_event (GstPad * pad, GstObject * parent,
++             demux->priv->stop_updates_task = FALSE;
++             g_mutex_unlock (&demux->priv->updates_timed_lock);
++             /* Task to periodically update the manifest */
++-            gst_task_start (demux->priv->updates_task);
+++            if (demux_class->requires_periodical_playlist_update (demux)) {
+++              gst_task_start (demux->priv->updates_task);
+++            }
++           }
++         } else {
++           /* no streams */
++@@ -2125,6 +2133,13 @@ gst_adaptive_demux_stream_data_received_default (GstAdaptiveDemux * demux,
++   return gst_adaptive_demux_stream_push_buffer (stream, buffer);
++ }
++
+++static gboolean
+++gst_adaptive_demux_requires_periodical_playlist_update_default (GstAdaptiveDemux
+++    * demux)
+++{
+++  return TRUE;
+++}
+++
++ static GstFlowReturn
++ _src_chain (GstPad * pad, GstObject * parent, GstBuffer * buffer)
++ {
++@@ -3338,7 +3353,15 @@ gst_adaptive_demux_stream_download_loop (GstAdaptiveDemuxStream * stream)
++       GST_DEBUG_OBJECT (stream->pad, "EOS, checking to stop download loop");
++       /* we push the EOS after releasing the object lock */
++       if (gst_adaptive_demux_is_live (demux)) {
++-        if (gst_adaptive_demux_stream_wait_manifest_update (demux, stream)) {
+++        GstAdaptiveDemuxClass *demux_class =
+++            GST_ADAPTIVE_DEMUX_GET_CLASS (demux);
+++
+++        /* this might be a fragment download error, refresh the manifest, just in case */
+++        if (!demux_class->requires_periodical_playlist_update (demux)) {
+++          ret = gst_adaptive_demux_update_manifest (demux);
+++          break;
+++        } else if (gst_adaptive_demux_stream_wait_manifest_update (demux,
+++                stream)) {
++           goto end;
++         }
++         gst_task_stop (stream->download_task);
++diff --git a/gst-libs/gst/adaptivedemux/gstadaptivedemux.h b/gst-libs/gst/adaptivedemux/gstadaptivedemux.h
++index 780f4d93f..9a1a1b7d1 100644
++--- a/gst-libs/gst/adaptivedemux/gstadaptivedemux.h
+++++ b/gst-libs/gst/adaptivedemux/gstadaptivedemux.h
++@@ -459,6 +459,20 @@ struct _GstAdaptiveDemuxClass
++    * selected period.
++    */
++   GstClockTime (*get_period_start_time) (GstAdaptiveDemux *demux);
+++
+++  /**
+++   * requires_periodical_playlist_update:
+++   * @demux: #GstAdaptiveDemux
+++   *
+++   * Some adaptive streaming protocols allow the client to download
+++   * the playlist once and build up the fragment list based on the
+++   * current fragment metadata. For those protocols the demuxer
+++   * doesn't need to periodically refresh the playlist. This vfunc
+++   * is relevant only for live playback scenarios.
+++   *
+++   * Return: %TRUE if the playlist needs to be refreshed periodically by the demuxer.
+++   */
+++  gboolean (*requires_periodical_playlist_update) (GstAdaptiveDemux * demux);
++ };
++
++ GType    gst_adaptive_demux_get_type (void);
++--
++2.11.0
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-implement-adaptivedemux-s-get_live_s.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-implement-adaptivedemux-s-get_live_s.patch
+new file mode 100644
+index 0000000000..b19e7228ed
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-implement-adaptivedemux-s-get_live_s.patch
+@@ -0,0 +1,182 @@
++From e9178fa082116d4bf733b184a8b6951112c17900 Mon Sep 17 00:00:00 2001
++From: Matthew Waters <matthew@centricular.com>
++Date: Thu, 10 Nov 2016 17:18:36 +1100
++Subject: [PATCH] smoothstreaming: implement adaptivedemux's
++ get_live_seek_range()
++
++Allows seeking through the available fragments that are still available
++on the server as specified by the DVRWindowLength attribute in the
++manifest.
++
++https://bugzilla.gnome.org/show_bug.cgi?id=774178
++---
++Upstream-Status: Backport
++Signed-off-by: Khem Raj <raj.khem@gmail.com>
++
++ ext/smoothstreaming/gstmssdemux.c    | 13 ++++++
++ ext/smoothstreaming/gstmssmanifest.c | 84 ++++++++++++++++++++++++++++++++++++
++ ext/smoothstreaming/gstmssmanifest.h |  1 +
++ 3 files changed, 98 insertions(+)
++
++diff --git a/ext/smoothstreaming/gstmssdemux.c b/ext/smoothstreaming/gstmssdemux.c
++index 9d0aece2b..b66e19514 100644
++--- a/ext/smoothstreaming/gstmssdemux.c
+++++ b/ext/smoothstreaming/gstmssdemux.c
++@@ -138,6 +138,8 @@ gst_mss_demux_get_manifest_update_interval (GstAdaptiveDemux * demux);
++ static GstFlowReturn
++ gst_mss_demux_update_manifest_data (GstAdaptiveDemux * demux,
++     GstBuffer * buffer);
+++static gboolean gst_mss_demux_get_live_seek_range (GstAdaptiveDemux * demux,
+++    gint64 * start, gint64 * stop);
++
++ static void
++ gst_mss_demux_class_init (GstMssDemuxClass * klass)
++@@ -192,6 +194,8 @@ gst_mss_demux_class_init (GstMssDemuxClass * klass)
++       gst_mss_demux_stream_update_fragment_info;
++   gstadaptivedemux_class->update_manifest_data =
++       gst_mss_demux_update_manifest_data;
+++  gstadaptivedemux_class->get_live_seek_range =
+++      gst_mss_demux_get_live_seek_range;
++
++   GST_DEBUG_CATEGORY_INIT (mssdemux_debug, "mssdemux", 0, "mssdemux plugin");
++ }
++@@ -659,3 +663,12 @@ gst_mss_demux_update_manifest_data (GstAdaptiveDemux * demux,
++   gst_mss_manifest_reload_fragments (mssdemux->manifest, buffer);
++   return GST_FLOW_OK;
++ }
+++
+++static gboolean
+++gst_mss_demux_get_live_seek_range (GstAdaptiveDemux * demux, gint64 * start,
+++    gint64 * stop)
+++{
+++  GstMssDemux *mssdemux = GST_MSS_DEMUX_CAST (demux);
+++
+++  return gst_mss_manifest_get_live_seek_range (mssdemux->manifest, start, stop);
+++}
++diff --git a/ext/smoothstreaming/gstmssmanifest.c b/ext/smoothstreaming/gstmssmanifest.c
++index 1b72e8de1..317b3cef9 100644
++--- a/ext/smoothstreaming/gstmssmanifest.c
+++++ b/ext/smoothstreaming/gstmssmanifest.c
++@@ -42,6 +42,7 @@ GST_DEBUG_CATEGORY_EXTERN (mssdemux_debug);
++
++ #define MSS_PROP_BITRATE              "Bitrate"
++ #define MSS_PROP_DURATION             "d"
+++#define MSS_PROP_DVR_WINDOW_LENGTH    "DVRWindowLength"
++ #define MSS_PROP_LANGUAGE             "Language"
++ #define MSS_PROP_NUMBER               "n"
++ #define MSS_PROP_REPETITIONS          "r"
++@@ -94,6 +95,7 @@ struct _GstMssManifest
++   xmlNodePtr xmlrootnode;
++
++   gboolean is_live;
+++  gint64 dvr_window;
++
++   GString *protection_system_id;
++   gchar *protection_data;
++@@ -330,6 +332,22 @@ gst_mss_manifest_new (GstBuffer * data)
++     xmlFree (live_str);
++   }
++
+++  /* the entire file is always available for non-live streams */
+++  if (!manifest->is_live) {
+++    manifest->dvr_window = 0;
+++  } else {
+++    /* if 0, or non-existent, the length is infinite */
+++    gchar *dvr_window_str = (gchar *) xmlGetProp (root,
+++        (xmlChar *) MSS_PROP_DVR_WINDOW_LENGTH);
+++    if (dvr_window_str) {
+++      manifest->dvr_window = g_ascii_strtoull (dvr_window_str, NULL, 10);
+++      xmlFree (dvr_window_str);
+++      if (manifest->dvr_window <= 0) {
+++        manifest->dvr_window = 0;
+++      }
+++    }
+++  }
+++
++   for (nodeiter = root->children; nodeiter; nodeiter = nodeiter->next) {
++     if (nodeiter->type == XML_ELEMENT_NODE
++         && (strcmp ((const char *) nodeiter->name, "StreamIndex") == 0)) {
++@@ -1406,3 +1424,69 @@ gst_mss_stream_get_lang (GstMssStream * stream)
++ {
++   return stream->lang;
++ }
+++
+++static GstClockTime
+++gst_mss_manifest_get_dvr_window_length_clock_time (GstMssManifest * manifest)
+++{
+++  gint64 timescale;
+++
+++  /* the entire file is always available for non-live streams */
+++  if (manifest->dvr_window == 0)
+++    return GST_CLOCK_TIME_NONE;
+++
+++  timescale = gst_mss_manifest_get_timescale (manifest);
+++  return (GstClockTime) gst_util_uint64_scale_round (manifest->dvr_window,
+++      GST_SECOND, timescale);
+++}
+++
+++static gboolean
+++gst_mss_stream_get_live_seek_range (GstMssStream * stream, gint64 * start,
+++    gint64 * stop)
+++{
+++  GList *l;
+++  GstMssStreamFragment *fragment;
+++  guint64 timescale = gst_mss_stream_get_timescale (stream);
+++
+++  g_return_val_if_fail (stream->active, FALSE);
+++
+++  /* XXX: assumes all the data in the stream is still available */
+++  l = g_list_first (stream->fragments);
+++  fragment = (GstMssStreamFragment *) l->data;
+++  *start = gst_util_uint64_scale_round (fragment->time, GST_SECOND, timescale);
+++
+++  l = g_list_last (stream->fragments);
+++  fragment = (GstMssStreamFragment *) l->data;
+++  *stop = gst_util_uint64_scale_round (fragment->time + fragment->duration *
+++      fragment->repetitions, GST_SECOND, timescale);
+++
+++  return TRUE;
+++}
+++
+++gboolean
+++gst_mss_manifest_get_live_seek_range (GstMssManifest * manifest, gint64 * start,
+++    gint64 * stop)
+++{
+++  GSList *iter;
+++  gboolean ret = FALSE;
+++
+++  for (iter = manifest->streams; iter; iter = g_slist_next (iter)) {
+++    GstMssStream *stream = iter->data;
+++
+++    if (stream->active) {
+++      /* FIXME: bound this correctly for multiple streams */
+++      if (!(ret = gst_mss_stream_get_live_seek_range (stream, start, stop)))
+++        break;
+++    }
+++  }
+++
+++  if (ret && gst_mss_manifest_is_live (manifest)) {
+++    GstClockTime dvr_window =
+++        gst_mss_manifest_get_dvr_window_length_clock_time (manifest);
+++
+++    if (GST_CLOCK_TIME_IS_VALID (dvr_window) && *stop - *start > dvr_window) {
+++      *start = *stop - dvr_window;
+++    }
+++  }
+++
+++  return ret;
+++}
++diff --git a/ext/smoothstreaming/gstmssmanifest.h b/ext/smoothstreaming/gstmssmanifest.h
++index af7419c23..6b7b1f971 100644
++--- a/ext/smoothstreaming/gstmssmanifest.h
+++++ b/ext/smoothstreaming/gstmssmanifest.h
++@@ -54,6 +54,7 @@ void gst_mss_manifest_reload_fragments (GstMssManifest * manifest, GstBuffer * d
++ GstClockTime gst_mss_manifest_get_min_fragment_duration (GstMssManifest * manifest);
++ const gchar * gst_mss_manifest_get_protection_system_id (GstMssManifest * manifest);
++ const gchar * gst_mss_manifest_get_protection_data (GstMssManifest * manifest);
+++gboolean gst_mss_manifest_get_live_seek_range (GstMssManifest * manifest, gint64 * start, gint64 * stop);
++
++ GstMssStreamType gst_mss_stream_get_type (GstMssStream *stream);
++ GstCaps * gst_mss_stream_get_caps (GstMssStream * stream);
++--
++2.11.0
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-use-the-duration-from-the-list-of-fr.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-use-the-duration-from-the-list-of-fr.patch
+new file mode 100644
+index 0000000000..d0355e0d67
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-smoothstreaming-use-the-duration-from-the-list-of-fr.patch
+@@ -0,0 +1,61 @@
++From 0fbee8f37427b88339194b22ba9aa210772a8613 Mon Sep 17 00:00:00 2001
++From: Matthew Waters <matthew@centricular.com>
++Date: Thu, 10 Nov 2016 17:20:27 +1100
++Subject: [PATCH] smoothstreaming: use the duration from the list of fragments
++ if not present in the manifest
++
++Provides a more accurate duration for live streams that may be minutes
++or hours in front of the earliest fragment.
++
++https://bugzilla.gnome.org/show_bug.cgi?id=774178
++---
++Upstream-Status: Backport
++Signed-off-by: Khem Raj <raj.khem@gmail.com>
++
++ ext/smoothstreaming/gstmssmanifest.c | 24 ++++++++++++++++++++++++
++ 1 file changed, 24 insertions(+)
++
++diff --git a/ext/smoothstreaming/gstmssmanifest.c b/ext/smoothstreaming/gstmssmanifest.c
++index 317b3cef9..144bbb42d 100644
++--- a/ext/smoothstreaming/gstmssmanifest.c
+++++ b/ext/smoothstreaming/gstmssmanifest.c
++@@ -888,6 +888,7 @@ gst_mss_manifest_get_duration (GstMssManifest * manifest)
++   gchar *duration;
++   guint64 dur = -1;
++
+++  /* try the property */
++   duration =
++       (gchar *) xmlGetProp (manifest->xmlrootnode,
++       (xmlChar *) MSS_PROP_STREAM_DURATION);
++@@ -895,6 +896,29 @@ gst_mss_manifest_get_duration (GstMssManifest * manifest)
++     dur = g_ascii_strtoull (duration, NULL, 10);
++     xmlFree (duration);
++   }
+++  /* else use the fragment list */
+++  if (dur <= 0) {
+++    guint64 max_dur = 0;
+++    GSList *iter;
+++
+++    for (iter = manifest->streams; iter; iter = g_slist_next (iter)) {
+++      GstMssStream *stream = iter->data;
+++
+++      if (stream->active) {
+++        if (stream->fragments) {
+++          GList *l = g_list_last (stream->fragments);
+++          GstMssStreamFragment *fragment = (GstMssStreamFragment *) l->data;
+++          guint64 frag_dur =
+++              fragment->time + fragment->duration * fragment->repetitions;
+++          max_dur = MAX (frag_dur, max_dur);
+++        }
+++      }
+++    }
+++
+++    if (max_dur != 0)
+++      dur = max_dur;
+++  }
+++
++   return dur;
++ }
++
++--
++2.11.0
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0002-glplugin-glwindow-fix-memory-leak-of-navigation-thre.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0002-glplugin-glwindow-fix-memory-leak-of-navigation-thre.patch
+deleted file mode 100755
+index 3491a15e65..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0002-glplugin-glwindow-fix-memory-leak-of-navigation-thre.patch
++++ /dev/null
+@@ -1,35 +0,0 @@
+-From 95cda7fbcf1a81289d9315c801c8e2b3d896f4cb Mon Sep 17 00:00:00 2001
+-From: Haihua Hu <b55597@freescale.com>
+-Date: Mon, 30 Nov 2015 09:36:09 +0800
+-Subject: [PATCH 2/5] [glplugin] glwindow: fix memory leak of navigation
+- thread
+-
+-When exit navigation thread, call g_thread_join() to release
+-the resource hold by it.
+-
+-Upstream-Status: Backport [1.7.1]
+-
+-bugzilla URL: https://bugzilla.gnome.org/show_bug.cgi?id=758820
+-
+-Signed-off-by: Haihua Hu <b55597@freescale.com>
+----
+- gst-libs/gst/gl/gstglwindow.c |    3 +++
+- 1 file changed, 3 insertions(+)
+-
+-diff --git a/gst-libs/gst/gl/gstglwindow.c b/gst-libs/gst/gl/gstglwindow.c
+-index 44b74ca..42ef296 100644
+---- a/gst-libs/gst/gl/gstglwindow.c
+-+++ b/gst-libs/gst/gl/gstglwindow.c
+-@@ -343,6 +343,9 @@ gst_gl_window_finalize (GObject * object)
+-     while (window->nav_alive) {
+-       g_cond_wait (&window->nav_destroy_cond, &window->nav_lock);
+-     }
+-+    /* release resource hold by navigation thread */
+-+    g_thread_join(window->priv->navigation_thread);
+-+    window->priv->navigation_thread = NULL;
+-     g_mutex_unlock (&window->nav_lock);
+-   }
+- 
+--- 
+-1.7.9.5
+-
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-glimagesink-Downrank-to-marginal.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0009-glimagesink-Downrank-to-marginal.patch
+similarity index 95%
+rename from meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-glimagesink-Downrank-to-marginal.patch
+rename to meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0009-glimagesink-Downrank-to-marginal.patch
+index 1085e95e8a..c81fb0f6aa 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0001-glimagesink-Downrank-to-marginal.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/0009-glimagesink-Downrank-to-marginal.patch
+@@ -18,7 +18,7 @@ diff --git a/ext/gl/gstopengl.c b/ext/gl/gstopengl.c
+ index a4b2540..0ccaacd 100644
+ --- a/ext/gl/gstopengl.c
+ +++ b/ext/gl/gstopengl.c
+-@@ -101,7 +101,7 @@ plugin_init (GstPlugin * plugin)
++@@ -118,7 +118,7 @@ plugin_init (GstPlugin * plugin)
+  #endif
+  
+    if (!gst_element_register (plugin, "glimagesink",
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/ensure-valid-sentinels-for-gst_structure_get-etc.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/ensure-valid-sentinels-for-gst_structure_get-etc.patch
+index 369ff93ac1..20c9ffcd84 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/ensure-valid-sentinels-for-gst_structure_get-etc.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad/ensure-valid-sentinels-for-gst_structure_get-etc.patch
+@@ -23,43 +23,45 @@ Signed-off-by: Andre McCurdy <armccurdy@gmail.com>
+  sys/decklink/gstdecklinkvideosink.cpp |  2 +-
+  3 files changed, 7 insertions(+), 7 deletions(-)
+ 
+-diff --git a/sys/decklink/gstdecklink.cpp b/sys/decklink/gstdecklink.cpp
+-index 64637f1..bac956f 100644
+---- a/sys/decklink/gstdecklink.cpp
+-+++ b/sys/decklink/gstdecklink.cpp
+-@@ -324,22 +324,22 @@ gst_decklink_mode_get_structure (GstDecklinkModeEnum e, BMDPixelFormat f)
+-       "height", G_TYPE_INT, mode->height,
++Index: gst-plugins-bad-1.10.2/sys/decklink/gstdecklink.cpp
++===================================================================
++--- gst-plugins-bad-1.10.2.orig/sys/decklink/gstdecklink.cpp
+++++ gst-plugins-bad-1.10.2/sys/decklink/gstdecklink.cpp
++@@ -476,7 +476,7 @@ gst_decklink_mode_get_structure (GstDeck
+        "pixel-aspect-ratio", GST_TYPE_FRACTION, mode->par_n, mode->par_d,
+-       "interlace-mode", G_TYPE_STRING, mode->interlaced ? "interleaved" : "progressive",
++       "interlace-mode", G_TYPE_STRING,
++       mode->interlaced ? "interleaved" : "progressive",
+ -      "framerate", GST_TYPE_FRACTION, mode->fps_n, mode->fps_d, NULL);
+-+      "framerate", GST_TYPE_FRACTION, mode->fps_n, mode->fps_d, (void *) NULL);
+++      "framerate", GST_TYPE_FRACTION, mode->fps_n, mode->fps_d, (void*)NULL);
+  
+-   switch (f) {
+-     case bmdFormat8BitYUV: /* '2vuy' */
++   if (input && mode->interlaced) {
++     if (mode->tff)
++@@ -489,16 +489,16 @@ gst_decklink_mode_get_structure (GstDeck
++     case bmdFormat8BitYUV:     /* '2vuy' */
+        gst_structure_set (s, "format", G_TYPE_STRING, "UYVY",
+            "colorimetry", G_TYPE_STRING, mode->colorimetry,
+ -          "chroma-site", G_TYPE_STRING, "mpeg2", NULL);
+-+          "chroma-site", G_TYPE_STRING, "mpeg2", (void *) NULL);
+++          "chroma-site", G_TYPE_STRING, "mpeg2", (void*)NULL);
+        break;
+-     case bmdFormat10BitYUV: /* 'v210' */
++     case bmdFormat10BitYUV:    /* 'v210' */
+ -      gst_structure_set (s, "format", G_TYPE_STRING, "v210", NULL);
+-+      gst_structure_set (s, "format", G_TYPE_STRING, "v210", (void *) NULL);
+++      gst_structure_set (s, "format", G_TYPE_STRING, "v210", (void*)NULL);
+        break;
+-     case bmdFormat8BitARGB: /* 'ARGB' */
++     case bmdFormat8BitARGB:    /* 'ARGB' */
+ -      gst_structure_set (s, "format", G_TYPE_STRING, "ARGB", NULL);
+-+      gst_structure_set (s, "format", G_TYPE_STRING, "ARGB", (void *) NULL);
+++      gst_structure_set (s, "format", G_TYPE_STRING, "ARGB", (void*)NULL);
+        break;
+-     case bmdFormat8BitBGRA: /* 'BGRA' */
++     case bmdFormat8BitBGRA:    /* 'BGRA' */
+ -      gst_structure_set (s, "format", G_TYPE_STRING, "BGRA", NULL);
+-+      gst_structure_set (s, "format", G_TYPE_STRING, "BGRA", (void *) NULL);
+++      gst_structure_set (s, "format", G_TYPE_STRING, "BGRA", (void*)NULL);
+        break;
+-     case bmdFormat10BitRGB: /* 'r210' Big-endian RGB 10-bit per component with SMPTE video levels (64-960). Packed as 2:10:10:10 */
+-     case bmdFormat12BitRGB: /* 'R12B' Big-endian RGB 12-bit per component with full range (0-4095). Packed as 12-bit per component */
+-diff --git a/sys/decklink/gstdecklinkaudiosrc.cpp b/sys/decklink/gstdecklinkaudiosrc.cpp
+-index 9a701ee..26fb7ec 100644
+---- a/sys/decklink/gstdecklinkaudiosrc.cpp
+-+++ b/sys/decklink/gstdecklinkaudiosrc.cpp
+-@@ -312,7 +312,7 @@ gst_decklink_audio_src_set_caps (GstBaseSrc * bsrc, GstCaps * caps)
++     case bmdFormat10BitRGB:    /* 'r210' Big-endian RGB 10-bit per component with SMPTE video levels (64-960). Packed as 2:10:10:10 */
++     case bmdFormat12BitRGB:    /* 'R12B' Big-endian RGB 12-bit per component with full range (0-4095). Packed as 12-bit per component */
++Index: gst-plugins-bad-1.10.2/sys/decklink/gstdecklinkaudiosrc.cpp
++===================================================================
++--- gst-plugins-bad-1.10.2.orig/sys/decklink/gstdecklinkaudiosrc.cpp
+++++ gst-plugins-bad-1.10.2/sys/decklink/gstdecklinkaudiosrc.cpp
++@@ -322,7 +322,7 @@ gst_decklink_audio_src_set_caps (GstBase
+        g_mutex_unlock (&self->input->lock);
+  
+        if (videosrc) {
+@@ -68,11 +70,11 @@ index 9a701ee..26fb7ec 100644
+          gst_object_unref (videosrc);
+  
+          switch (vconn) {
+-diff --git a/sys/decklink/gstdecklinkvideosink.cpp b/sys/decklink/gstdecklinkvideosink.cpp
+-index eebeff3..da6e486 100644
+---- a/sys/decklink/gstdecklinkvideosink.cpp
+-+++ b/sys/decklink/gstdecklinkvideosink.cpp
+-@@ -158,7 +158,7 @@ reset_framerate (GstCapsFeatures * features, GstStructure * structure,
++Index: gst-plugins-bad-1.10.2/sys/decklink/gstdecklinkvideosink.cpp
++===================================================================
++--- gst-plugins-bad-1.10.2.orig/sys/decklink/gstdecklinkvideosink.cpp
+++++ gst-plugins-bad-1.10.2/sys/decklink/gstdecklinkvideosink.cpp
++@@ -163,7 +163,7 @@ reset_framerate (GstCapsFeatures * featu
+      gpointer user_data)
+  {
+    gst_structure_set (structure, "framerate", GST_TYPE_FRACTION_RANGE, 0, 1,
+@@ -81,6 +83,3 @@ index eebeff3..da6e486 100644
+  
+    return TRUE;
+  }
+--- 
+-1.9.1
+-
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.10.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.10.4.bb
+new file mode 100644
+index 0000000000..be3798e733
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.10.4.bb
+@@ -0,0 +1,27 @@
++require gstreamer1.0-plugins-bad.inc
++
++LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
++                    file://COPYING.LIB;md5=21682e4e8fea52413fd26c60acb907e5 \
++                    file://gst/tta/crc32.h;beginline=12;endline=29;md5=27db269c575d1e5317fffca2d33b3b50 \
++                    file://gst/tta/filters.h;beginline=12;endline=29;md5=8a08270656f2f8ad7bb3655b83138e5a"
++
++SRC_URI = " \
++    http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
++    file://configure-allow-to-disable-libssh2.patch \
++    file://fix-maybe-uninitialized-warnings-when-compiling-with-Os.patch \
++    file://avoid-including-sys-poll.h-directly.patch \
++    file://ensure-valid-sentinels-for-gst_structure_get-etc.patch \
++    file://0001-gstreamer-gl.pc.in-don-t-append-GL_CFLAGS-to-CFLAGS.patch \
++    file://0009-glimagesink-Downrank-to-marginal.patch \
++    file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
++    file://0001-Prepend-PKG_CONFIG_SYSROOT_DIR-to-pkg-config-output.patch \
++    file://0001-smoothstreaming-implement-adaptivedemux-s-get_live_s.patch \
++    file://0001-smoothstreaming-use-the-duration-from-the-list-of-fr.patch \
++    file://0001-mssdemux-improved-live-playback-support.patch \
++"
++SRC_URI[md5sum] = "2757103e57a096a1a05b3ab85b8381af"
++SRC_URI[sha256sum] = "23ddae506b3a223b94869a0d3eea3e9a12e847f94d2d0e0b97102ce13ecd6966"
++
++S = "${WORKDIR}/gst-plugins-bad-${PV}"
++
++EXTRA_OECONF += "WAYLAND_PROTOCOLS_SYSROOT_DIR=${RECIPE_SYSROOT}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.6.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.6.4.bb
+deleted file mode 100644
+index 879d532276..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_1.6.4.bb
++++ /dev/null
+@@ -1,28 +0,0 @@
+-include gstreamer1.0-plugins-bad.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
+-                    file://COPYING.LIB;md5=21682e4e8fea52413fd26c60acb907e5 \
+-                    file://gst/tta/crc32.h;beginline=12;endline=29;md5=27db269c575d1e5317fffca2d33b3b50 \
+-                    file://gst/tta/filters.h;beginline=12;endline=29;md5=8a08270656f2f8ad7bb3655b83138e5a"
+-
+-# Note: The mpg123 plugin was moved to gst-plugins-ugly prior to the 1.7.2
+-# release, so this line should be removed during the update to 1.8.x
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-bad/commit/?id=08d8aefcdaaf89ecb6dd53ec1e4f95cd42d01664
+-PACKAGECONFIG[mpg123] = "--enable-mpg123,--disable-mpg123,mpg123"
+-
+-# Note: The gsettings plug-in was dropped prior to the 1.7.2 release,
+-# so this line should be removed during the update to 1.8.x
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-bad/commit/?id=914291808ad10621d6a74031f3d46d45eef5a3a3
+-EXTRA_OECONF += "--disable-gsettings"
+-
+-SRC_URI = " \
+-    http://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-${PV}.tar.xz \
+-    file://configure-allow-to-disable-libssh2.patch \
+-    file://0001-glimagesink-Downrank-to-marginal.patch \
+-    file://0002-glplugin-glwindow-fix-memory-leak-of-navigation-thre.patch \
+-"
+-
+-SRC_URI[md5sum] = "6768524cb8bcdcaf1345d9c66f3bd7bd"
+-SRC_URI[sha256sum] = "2b98df8d4d7784d5186baf2e19f565a6d8f8924119f8470e23c96889aaa603fe"
+-
+-S = "${WORKDIR}/gst-plugins-bad-${PV}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_git.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_git.bb
+deleted file mode 100644
+index ef6581b2ab..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-bad_git.bb
++++ /dev/null
+@@ -1,65 +0,0 @@
+-DEFAULT_PREFERENCE = "-1"
+-
+-include gstreamer1.0-plugins-bad.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=73a5855a8119deb017f5f13cf327095d \
+-                    file://COPYING.LIB;md5=21682e4e8fea52413fd26c60acb907e5 \
+-                    file://gst/tta/crc32.h;beginline=12;endline=29;md5=27db269c575d1e5317fffca2d33b3b50 \
+-                    file://gst/tta/filters.h;beginline=12;endline=29;md5=8a08270656f2f8ad7bb3655b83138e5a"
+-
+-SRC_URI = " \
+-    git://anongit.freedesktop.org/gstreamer/gst-plugins-bad;name=base \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;name=common \
+-    file://configure-allow-to-disable-libssh2.patch \
+-    file://fix-maybe-uninitialized-warnings-when-compiling-with-Os.patch \
+-    file://avoid-including-sys-poll.h-directly.patch \
+-    file://ensure-valid-sentinels-for-gst_structure_get-etc.patch \
+-    file://0001-gstreamer-gl.pc.in-don-t-append-GL_CFLAGS-to-CFLAGS.patch \
+-"
+-
+-PV = "1.7.2+git${SRCPV}"
+-
+-UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>(\d+(\.\d+)+))"
+-
+-SRCREV_base = "50ae46cc0f8827bf966920d9c221e5cf86e811ba"
+-SRCREV_common = "a25397448942079002622be231e9ec49b985745a"
+-SRCREV_FORMAT = "base"
+-
+-S = "${WORKDIR}/git"
+-
+-# over-ride the default hls PACKAGECONFIG in gstreamer1.0-plugins-bad.inc to
+-# pass an additional --with-hls-crypto=XXX option (new in 1.7.x) and switch HLS
+-# AES decryption from nettle to openssl (ie a shared dependency with dtls).
+-# This should move back to the common .inc once the main recipe updates to 1.8.x
+-PACKAGECONFIG[hls] = "--enable-hls --with-hls-crypto=openssl,--disable-hls,openssl"
+-
+-# The tinyalsa plugin was added prior to the 1.7.2 release
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-bad/commit/?id=c8bd74fa9a81398f57d976c478d2043f30188684
+-PACKAGECONFIG[tinyalsa] = "--enable-tinyalsa,--disable-tinyalsa,tinyalsa"
+-
+-# The vulkan based video sink plugin was added prior to the 1.7.2 release
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-bad/commit/?id=5de6dd9f40629562acf90e35e1fa58464d66617d
+-PACKAGECONFIG[vulkan] = "--enable-vulkan,--disable-vulkan,libxcb"
+-
+-# The dependency-less netsim plugin was added prior to the 1.7.2 release
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-bad/commit/?id=e3f9e854f08e82bfab11182c5a2aa6f9a0c73cd5
+-EXTRA_OECONF += " \
+-    --enable-netsim \
+-"
+-
+-do_configure_prepend() {
+-	${S}/autogen.sh --noconfigure
+-}
+-
+-# In 1.6.2, the "--enable-hls" configure option generated an installable package
+-# called "gstreamer1.0-plugins-bad-fragmented". In 1.7.1 that HLS plugin package
+-# has become "gstreamer1.0-plugins-bad-hls". See:
+-# http://cgit.freedesktop.org/gstreamer/gst-plugins-bad/commit/?id=efe62292a3d045126654d93239fdf4cc8e48ae08
+-
+-PACKAGESPLITFUNCS_append = " handle_hls_rename "
+-
+-python handle_hls_rename () {
+-    d.setVar('RPROVIDES_gstreamer1.0-plugins-bad-hls', 'gstreamer1.0-plugins-bad-fragmented')
+-    d.setVar('RREPLACES_gstreamer1.0-plugins-bad-hls', 'gstreamer1.0-plugins-bad-fragmented')
+-    d.setVar('RCONFLICTS_gstreamer1.0-plugins-bad-hls', 'gstreamer1.0-plugins-bad-fragmented')
+-}
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base.inc
+index 7381458f47..08130c1da4 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base.inc
+@@ -17,9 +17,8 @@ PACKAGES_DYNAMIC =+ "^libgst.*"
+ 
+ PACKAGECONFIG ??= " \
+     ${GSTREAMER_ORC} \
+-    ${@bb.utils.contains('DISTRO_FEATURES', 'alsa', 'alsa', '', d)} \
+-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
+-    gio-unix-2.0 ivorbis ogg pango theora vorbis \
++    ${@bb.utils.filter('DISTRO_FEATURES', 'alsa x11', d)} \
++    gio-unix-2.0 ogg pango theora vorbis \
+ "
+ 
+ X11DEPENDS = "virtual/libx11 libsm libxrender libxv"
+@@ -31,6 +30,7 @@ PACKAGECONFIG[cdparanoia]   = "--enable-cdparanoia,--disable-cdparanoia,cdparano
+ PACKAGECONFIG[gio-unix-2.0] = "--enable-gio_unix_2_0,--disable-gio_unix_2_0,glib-2.0"
+ PACKAGECONFIG[ivorbis]      = "--enable-ivorbis,--disable-ivorbis,tremor"
+ PACKAGECONFIG[ogg]          = "--enable-ogg,--disable-ogg,libogg"
++PACKAGECONFIG[opus]         = "--enable-opus,--disable-opus,libopus"
+ PACKAGECONFIG[pango]        = "--enable-pango,--disable-pango,pango"
+ PACKAGECONFIG[theora]       = "--enable-theora,--disable-theora,libtheora"
+ PACKAGECONFIG[visual]       = "--enable-libvisual,--disable-libvisual,libvisual"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch
+index 781e4d8012..094bdac846 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0001-Makefile.am-don-t-hardcode-libtool-name-when-running.patch
+@@ -24,7 +24,7 @@ diff --git a/gst-libs/gst/allocators/Makefile.am b/gst-libs/gst/allocators/Makef
+ index 9361bf9..bc7f53a 100644
+ --- a/gst-libs/gst/allocators/Makefile.am
+ +++ b/gst-libs/gst/allocators/Makefile.am
+-@@ -37,7 +37,7 @@ GstAllocators-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstallocators-@
++@@ -38,7 +38,7 @@ GstAllocators-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstallocators-@
+  		--add-include-path=`PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" $(PKG_CONFIG) --variable=girdir gstreamer-@GST_API_VERSION@` \
+  		--library=libgstallocators-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+@@ -37,7 +37,7 @@ diff --git a/gst-libs/gst/app/Makefile.am b/gst-libs/gst/app/Makefile.am
+ index 6d6de8d..dcc2fe0 100644
+ --- a/gst-libs/gst/app/Makefile.am
+ +++ b/gst-libs/gst/app/Makefile.am
+-@@ -52,7 +52,7 @@ GstApp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstapp-@GST_API_VERSIO
++@@ -53,7 +53,7 @@ GstApp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstapp-@GST_API_VERSIO
+  		--library=libgstapp-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+@@ -50,7 +50,7 @@ diff --git a/gst-libs/gst/audio/Makefile.am b/gst-libs/gst/audio/Makefile.am
+ index 275d222..2374196 100644
+ --- a/gst-libs/gst/audio/Makefile.am
+ +++ b/gst-libs/gst/audio/Makefile.am
+-@@ -106,7 +106,7 @@ GstAudio-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstaudio-@GST_API_VE
++@@ -116,7 +116,7 @@ GstAudio-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstaudio-@GST_API_VE
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+  		--include=GstTag-@GST_API_VERSION@ \
+@@ -63,7 +63,7 @@ diff --git a/gst-libs/gst/fft/Makefile.am b/gst-libs/gst/fft/Makefile.am
+ index 09b3d68..f545354 100644
+ --- a/gst-libs/gst/fft/Makefile.am
+ +++ b/gst-libs/gst/fft/Makefile.am
+-@@ -64,7 +64,7 @@ GstFft-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstfft-@GST_API_VERSIO
++@@ -65,7 +65,7 @@ GstFft-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstfft-@GST_API_VERSIO
+  		--add-include-path=`PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" $(PKG_CONFIG) --variable=girdir gstreamer-@GST_API_VERSION@` \
+  		--library=libgstfft-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+@@ -76,7 +76,7 @@ diff --git a/gst-libs/gst/pbutils/Makefile.am b/gst-libs/gst/pbutils/Makefile.am
+ index 64d5eb0..91dc214 100644
+ --- a/gst-libs/gst/pbutils/Makefile.am
+ +++ b/gst-libs/gst/pbutils/Makefile.am
+-@@ -94,7 +94,7 @@ GstPbutils-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstpbutils-@GST_AP
++@@ -99,7 +99,7 @@ GstPbutils-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstpbutils-@GST_AP
+  		--include=GstTag-@GST_API_VERSION@ \
+  		--include=GstVideo-@GST_API_VERSION@ \
+  		--include=GstAudio-@GST_API_VERSION@ \
+@@ -102,7 +102,7 @@ diff --git a/gst-libs/gst/rtp/Makefile.am b/gst-libs/gst/rtp/Makefile.am
+ index fdd01c1..f5445c1 100644
+ --- a/gst-libs/gst/rtp/Makefile.am
+ +++ b/gst-libs/gst/rtp/Makefile.am
+-@@ -64,7 +64,7 @@ GstRtp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtp-@GST_API_VERSIO
++@@ -65,7 +65,7 @@ GstRtp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtp-@GST_API_VERSIO
+  		--library=libgstrtp-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+@@ -115,7 +115,7 @@ diff --git a/gst-libs/gst/rtsp/Makefile.am b/gst-libs/gst/rtsp/Makefile.am
+ index ede5706..9b0b258 100644
+ --- a/gst-libs/gst/rtsp/Makefile.am
+ +++ b/gst-libs/gst/rtsp/Makefile.am
+-@@ -71,7 +71,7 @@ GstRtsp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtsp-@GST_API_VERS
++@@ -72,7 +72,7 @@ GstRtsp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtsp-@GST_API_VERS
+  		--include=Gio-2.0 \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstSdp-@GST_API_VERSION@ \
+@@ -128,7 +128,7 @@ diff --git a/gst-libs/gst/sdp/Makefile.am b/gst-libs/gst/sdp/Makefile.am
+ index a90f30b..0e149b8 100644
+ --- a/gst-libs/gst/sdp/Makefile.am
+ +++ b/gst-libs/gst/sdp/Makefile.am
+-@@ -31,7 +31,7 @@ GstSdp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstsdp-@GST_API_VERSIO
++@@ -32,7 +32,7 @@ GstSdp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstsdp-@GST_API_VERSIO
+  		--add-include-path=`PKG_CONFIG_PATH="$(GST_PKG_CONFIG_PATH)" $(PKG_CONFIG) --variable=girdir gstreamer-@GST_API_VERSION@` \
+  		--library=libgstsdp-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+@@ -141,7 +141,7 @@ diff --git a/gst-libs/gst/tag/Makefile.am b/gst-libs/gst/tag/Makefile.am
+ index c534a4d..cafafd3 100644
+ --- a/gst-libs/gst/tag/Makefile.am
+ +++ b/gst-libs/gst/tag/Makefile.am
+-@@ -44,7 +44,7 @@ GstTag-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgsttag-@GST_API_VERSIO
++@@ -45,7 +45,7 @@ GstTag-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgsttag-@GST_API_VERSIO
+  		--library=libgsttag-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+@@ -154,7 +154,7 @@ diff --git a/gst-libs/gst/video/Makefile.am b/gst-libs/gst/video/Makefile.am
+ index 5d31fa1..ac64eb3 100644
+ --- a/gst-libs/gst/video/Makefile.am
+ +++ b/gst-libs/gst/video/Makefile.am
+-@@ -113,7 +113,7 @@ GstVideo-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstvideo-@GST_API_VE
++@@ -116,7 +116,7 @@ GstVideo-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstvideo-@GST_API_VE
+  		--library=libgstvideo-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch
+index 85fcacb555..0a8bc9b076 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0002-Makefile.am-prefix-calls-to-pkg-config-with-PKG_CONF.patch
+@@ -24,7 +24,7 @@ diff --git a/gst-libs/gst/allocators/Makefile.am b/gst-libs/gst/allocators/Makef
+ index bc7f53a..0ef5f86 100644
+ --- a/gst-libs/gst/allocators/Makefile.am
+ +++ b/gst-libs/gst/allocators/Makefile.am
+-@@ -34,7 +34,7 @@ GstAllocators-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstallocators-@
++@@ -35,7 +35,7 @@ GstAllocators-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstallocators-@
+  		--c-include "gst/allocators/allocators.h" \
+  		-I$(top_srcdir)/gst-libs \
+  		-I$(top_builddir)/gst-libs \
+@@ -33,7 +33,7 @@ index bc7f53a..0ef5f86 100644
+  		--library=libgstallocators-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--libtool="$(LIBTOOL)" \
+-@@ -58,7 +58,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -59,7 +59,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		$(INTROSPECTION_COMPILER) \
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+@@ -46,7 +46,7 @@ diff --git a/gst-libs/gst/app/Makefile.am b/gst-libs/gst/app/Makefile.am
+ index dcc2fe0..dc076cb 100644
+ --- a/gst-libs/gst/app/Makefile.am
+ +++ b/gst-libs/gst/app/Makefile.am
+-@@ -47,8 +47,8 @@ GstApp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstapp-@GST_API_VERSIO
++@@ -48,8 +48,8 @@ GstApp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstapp-@GST_API_VERSIO
+  		--c-include "gst/app/app.h" \
+  		-I$(top_srcdir)/gst-libs \
+  		-I$(top_builddir)/gst-libs \
+@@ -61,7 +61,7 @@ diff --git a/gst-libs/gst/audio/Makefile.am b/gst-libs/gst/audio/Makefile.am
+ index 2374196..295eb42 100644
+ --- a/gst-libs/gst/audio/Makefile.am
+ +++ b/gst-libs/gst/audio/Makefile.am
+-@@ -96,12 +96,12 @@ GstAudio-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstaudio-@GST_API_VE
++@@ -106,12 +106,12 @@ GstAudio-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstaudio-@GST_API_VE
+  		-I$(top_srcdir)/gst-libs \
+  		-I$(top_builddir)/gst-libs \
+  		--c-include "gst/audio/audio.h" \
+@@ -78,7 +78,7 @@ index 2374196..295eb42 100644
+  		--library-path="$(top_builddir)/gst-libs/gst/tag/" \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+-@@ -130,8 +130,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -140,8 +140,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+  		--includedir="$(top_builddir)/gst-libs/gst/tag/" \
+@@ -93,7 +93,7 @@ diff --git a/gst-libs/gst/fft/Makefile.am b/gst-libs/gst/fft/Makefile.am
+ index f545354..1bb6243 100644
+ --- a/gst-libs/gst/fft/Makefile.am
+ +++ b/gst-libs/gst/fft/Makefile.am
+-@@ -61,7 +61,7 @@ GstFft-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstfft-@GST_API_VERSIO
++@@ -62,7 +62,7 @@ GstFft-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstfft-@GST_API_VERSIO
+  		--c-include "gst/fft/fft.h" \
+  		-I$(top_srcdir)/gst-libs \
+  		-I$(top_builddir)/gst-libs \
+@@ -102,7 +102,7 @@ index f545354..1bb6243 100644
+  		--library=libgstfft-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--libtool="$(LIBTOOL)" \
+-@@ -85,7 +85,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -86,7 +86,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		$(INTROSPECTION_COMPILER) \
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+@@ -115,7 +115,7 @@ diff --git a/gst-libs/gst/pbutils/Makefile.am b/gst-libs/gst/pbutils/Makefile.am
+ index 91dc214..dc8e1d3 100644
+ --- a/gst-libs/gst/pbutils/Makefile.am
+ +++ b/gst-libs/gst/pbutils/Makefile.am
+-@@ -79,14 +79,14 @@ GstPbutils-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstpbutils-@GST_AP
++@@ -84,14 +84,14 @@ GstPbutils-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstpbutils-@GST_AP
+  		--c-include "gst/pbutils/pbutils.h" \
+  		-I$(top_srcdir)/gst-libs \
+  		-I$(top_builddir)/gst-libs \
+@@ -134,7 +134,7 @@ index 91dc214..dc8e1d3 100644
+  		--library-path="$(top_builddir)/gst-libs/gst/tag/" \
+  		--library-path="$(top_builddir)/gst-libs/gst/video/" \
+  		--library-path="$(top_builddir)/gst-libs/gst/audio/" \
+-@@ -119,8 +119,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -124,8 +124,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		$(INTROSPECTION_COMPILER) \
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+@@ -175,7 +175,7 @@ diff --git a/gst-libs/gst/rtp/Makefile.am b/gst-libs/gst/rtp/Makefile.am
+ index f5445c1..527c0b4 100644
+ --- a/gst-libs/gst/rtp/Makefile.am
+ +++ b/gst-libs/gst/rtp/Makefile.am
+-@@ -59,8 +59,8 @@ GstRtp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtp-@GST_API_VERSIO
++@@ -60,8 +60,8 @@ GstRtp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtp-@GST_API_VERSIO
+  		--c-include "gst/rtp/rtp.h" \
+  		-I$(top_builddir)/gst-libs \
+  		-I$(top_srcdir)/gst-libs \
+@@ -186,7 +186,7 @@ index f5445c1..527c0b4 100644
+  		--library=libgstrtp-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+-@@ -87,8 +87,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -88,8 +88,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		$(INTROSPECTION_COMPILER) \
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+@@ -201,7 +201,7 @@ diff --git a/gst-libs/gst/rtsp/Makefile.am b/gst-libs/gst/rtsp/Makefile.am
+ index 9b0b258..4f6d9f8 100644
+ --- a/gst-libs/gst/rtsp/Makefile.am
+ +++ b/gst-libs/gst/rtsp/Makefile.am
+-@@ -66,7 +66,7 @@ GstRtsp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtsp-@GST_API_VERS
++@@ -67,7 +67,7 @@ GstRtsp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtsp-@GST_API_VERS
+  		-I$(top_builddir)/gst-libs \
+  		-I$(top_srcdir)/gst-libs \
+  		--add-include-path=$(builddir)/../sdp \
+@@ -210,7 +210,7 @@ index 9b0b258..4f6d9f8 100644
+  		--library=libgstrtsp-@GST_API_VERSION@.la \
+  		--include=Gio-2.0 \
+  		--include=Gst-@GST_API_VERSION@ \
+-@@ -96,7 +96,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -97,7 +97,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+  		--includedir=$(builddir)/../sdp \
+@@ -223,7 +223,7 @@ diff --git a/gst-libs/gst/sdp/Makefile.am b/gst-libs/gst/sdp/Makefile.am
+ index 0e149b8..9aa0512 100644
+ --- a/gst-libs/gst/sdp/Makefile.am
+ +++ b/gst-libs/gst/sdp/Makefile.am
+-@@ -28,7 +28,7 @@ GstSdp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstsdp-@GST_API_VERSIO
++@@ -29,7 +29,7 @@ GstSdp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstsdp-@GST_API_VERSIO
+  		--warn-all \
+  		--c-include "gst/sdp/sdp.h" \
+  		-I$(top_srcdir)/gst-libs \
+@@ -232,7 +232,7 @@ index 0e149b8..9aa0512 100644
+  		--library=libgstsdp-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--libtool="$(LIBTOOL)" \
+-@@ -52,7 +52,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -53,7 +53,7 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		$(INTROSPECTION_COMPILER) \
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+@@ -245,7 +245,7 @@ diff --git a/gst-libs/gst/tag/Makefile.am b/gst-libs/gst/tag/Makefile.am
+ index cafafd3..ba99279 100644
+ --- a/gst-libs/gst/tag/Makefile.am
+ +++ b/gst-libs/gst/tag/Makefile.am
+-@@ -39,8 +39,8 @@ GstTag-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgsttag-@GST_API_VERSIO
++@@ -40,8 +40,8 @@ GstTag-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgsttag-@GST_API_VERSIO
+  		--c-include "gst/tag/tag.h" \
+  		-I$(top_srcdir)/gst-libs \
+  		-I$(top_builddir)/gst-libs \
+@@ -256,7 +256,7 @@ index cafafd3..ba99279 100644
+  		--library=libgsttag-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+-@@ -67,8 +67,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -68,8 +68,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		$(INTROSPECTION_COMPILER) \
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+@@ -271,7 +271,7 @@ diff --git a/gst-libs/gst/video/Makefile.am b/gst-libs/gst/video/Makefile.am
+ index ac64eb3..342c8c6 100644
+ --- a/gst-libs/gst/video/Makefile.am
+ +++ b/gst-libs/gst/video/Makefile.am
+-@@ -108,8 +108,8 @@ GstVideo-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstvideo-@GST_API_VE
++@@ -111,8 +111,8 @@ GstVideo-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstvideo-@GST_API_VE
+  		--c-include "gst/video/video.h" \
+  		-I$(top_srcdir)/gst-libs \
+  		-I$(top_builddir)/gst-libs \
+@@ -282,7 +282,7 @@ index ac64eb3..342c8c6 100644
+  		--library=libgstvideo-@GST_API_VERSION@.la \
+  		--include=Gst-@GST_API_VERSION@ \
+  		--include=GstBase-@GST_API_VERSION@ \
+-@@ -136,8 +136,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
++@@ -139,8 +139,8 @@ typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+  		$(INTROSPECTION_COMPILER) \
+  		--includedir=$(srcdir) \
+  		--includedir=$(builddir) \
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch
+index 42d99c1db9..4adf605460 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-rtsp-drop-incorrect-reference-to-gstreamer-sdp-in-Ma.patch
+@@ -14,7 +14,7 @@ diff --git a/gst-libs/gst/rtsp/Makefile.am b/gst-libs/gst/rtsp/Makefile.am
+ index 4f6d9f8..0afa370 100644
+ --- a/gst-libs/gst/rtsp/Makefile.am
+ +++ b/gst-libs/gst/rtsp/Makefile.am
+-@@ -74,7 +74,6 @@ GstRtsp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtsp-@GST_API_VERS
++@@ -75,7 +75,6 @@ GstRtsp-@GST_API_VERSION@.gir: $(INTROSPECTION_SCANNER) libgstrtsp-@GST_API_VERS
+  		--libtool="$(LIBTOOL)" \
+  		--pkg gio-2.0 \
+  		--pkg gstreamer-@GST_API_VERSION@ \
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-subparse-set-need_segment-after-sink-pad-received-GS.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-subparse-set-need_segment-after-sink-pad-received-GS.patch
+index 7813915d8d..b924e38824 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-subparse-set-need_segment-after-sink-pad-received-GS.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0004-subparse-set-need_segment-after-sink-pad-received-GS.patch
+@@ -51,7 +51,7 @@ index b565e93..7741ccc
+          GST_WARNING_OBJECT (self, "seek to 0 bytes failed");
+        }
+  
+-@@ -1632,8 +1630,10 @@ gst_sub_parse_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
++@@ -1641,8 +1639,10 @@ gst_sub_parse_sink_event (GstPad * pad, GstObject * parent, GstEvent * event)
+        gst_event_parse_segment (event, &s);
+        if (s->format == GST_FORMAT_TIME)
+          gst_event_copy_segment (event, &self->segment);
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0005-convertframe-Support-video-crop-when-convert-frame.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0005-convertframe-Support-video-crop-when-convert-frame.patch
+deleted file mode 100755
+index 096a6f4cba..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/0005-convertframe-Support-video-crop-when-convert-frame.patch
++++ /dev/null
+@@ -1,143 +0,0 @@
+-From 5be6ed00aad028d9cbb4e0c63af0be69d335c71e Mon Sep 17 00:00:00 2001
+-From: Song Bing <b06498@freescale.com>
+-Date: Fri, 11 Dec 2015 21:42:00 +0800
+-Subject: [PATCH] convertframe: Support video crop when convert frame
+-
+-Get thumbnail will user convertframe to convert video frame to
+-desired video format and size. But haven't process crop meta on
+-the video buffer. Add support video crop.
+-
+-https://bugzilla.gnome.org/show_bug.cgi?id=759329
+-
+-Upstream-Status: Backport [1.7.1]
+-
+----
+- gst-libs/gst/video/convertframe.c | 65 +++++++++++++++++++++++++++++++++------
+- 1 file changed, 56 insertions(+), 9 deletions(-)
+-
+-diff --git a/gst-libs/gst/video/convertframe.c b/gst-libs/gst/video/convertframe.c
+-index aa9c3d3..942a51e 100644
+---- a/gst-libs/gst/video/convertframe.c
+-+++ b/gst-libs/gst/video/convertframe.c
+-@@ -110,12 +110,23 @@ fail:
+- static GstElement *
+- build_convert_frame_pipeline (GstElement ** src_element,
+-     GstElement ** sink_element, const GstCaps * from_caps,
+--    const GstCaps * to_caps, GError ** err)
+-+    GstVideoCropMeta * cmeta, const GstCaps * to_caps, GError ** err)
+- {
+--  GstElement *src = NULL, *csp = NULL, *vscale = NULL;
+--  GstElement *sink = NULL, *encoder = NULL, *pipeline;
+-+  GstElement *vcrop = NULL, *csp = NULL, *csp2 = NULL, *vscale = NULL;
+-+  GstElement *src = NULL, *sink = NULL, *encoder = NULL, *pipeline;
+-+  GstVideoInfo info;
+-   GError *error = NULL;
+- 
+-+  if (cmeta) {
+-+    if (!create_element ("videocrop", &vcrop, &error)) {
+-+      g_warning
+-+          ("build_convert_frame_pipeline: Buffer has crop metadata but videocrop element is not found. Cropping will be disabled");
+-+    } else {
+-+      if (!create_element ("videoconvert", &csp2, &error))
+-+        goto no_elements;
+-+    }
+-+  }
+-+
+-   /* videoscale is here to correct for the pixel-aspect-ratio for us */
+-   GST_DEBUG ("creating elements");
+-   if (!create_element ("appsrc", &src, &error) ||
+-@@ -133,15 +144,42 @@ build_convert_frame_pipeline (GstElement ** src_element,
+- 
+-   GST_DEBUG ("adding elements");
+-   gst_bin_add_many (GST_BIN (pipeline), src, csp, vscale, sink, NULL);
+-+  if (vcrop)
+-+    gst_bin_add_many (GST_BIN (pipeline), vcrop, csp2, NULL);
+- 
+-   /* set caps */
+-   g_object_set (src, "caps", from_caps, NULL);
+-+  if (vcrop) {
+-+    gst_video_info_from_caps (&info, from_caps);
+-+    g_object_set (vcrop, "left", cmeta->x, NULL);
+-+    g_object_set (vcrop, "top", cmeta->y, NULL);
+-+    g_object_set (vcrop, "right", GST_VIDEO_INFO_WIDTH (&info) - cmeta->width,
+-+        NULL);
+-+    g_object_set (vcrop, "bottom",
+-+        GST_VIDEO_INFO_HEIGHT (&info) - cmeta->height, NULL);
+-+    GST_DEBUG ("crop meta [x,y,width,height]: %d %d %d %d", cmeta->x, cmeta->y,
+-+        cmeta->width, cmeta->height);
+-+  }
+-   g_object_set (sink, "caps", to_caps, NULL);
+- 
+-   /* FIXME: linking is still way too expensive, profile this properly */
+--  GST_DEBUG ("linking src->csp");
+--  if (!gst_element_link_pads (src, "src", csp, "sink"))
+--    goto link_failed;
+-+  if (vcrop) {
+-+    GST_DEBUG ("linking src->csp2");
+-+    if (!gst_element_link_pads (src, "src", csp2, "sink"))
+-+      goto link_failed;
+-+
+-+    GST_DEBUG ("linking csp2->vcrop");
+-+    if (!gst_element_link_pads (csp2, "src", vcrop, "sink"))
+-+      goto link_failed;
+-+
+-+    GST_DEBUG ("linking vcrop->csp");
+-+    if (!gst_element_link_pads (vcrop, "src", csp, "sink"))
+-+      goto link_failed;
+-+  } else {
+-+    GST_DEBUG ("linking src->csp");
+-+    if (!gst_element_link_pads (src, "src", csp, "sink"))
+-+      goto link_failed;
+-+  }
+- 
+-   GST_DEBUG ("linking csp->vscale");
+-   if (!gst_element_link_pads_full (csp, "src", vscale, "sink",
+-@@ -193,8 +231,12 @@ no_elements:
+-   {
+-     if (src)
+-       gst_object_unref (src);
+-+    if (vcrop)
+-+      gst_object_unref (vcrop);
+-     if (csp)
+-       gst_object_unref (csp);
+-+    if (csp2)
+-+      gst_object_unref (csp2);
+-     if (vscale)
+-       gst_object_unref (vscale);
+-     if (sink)
+-@@ -209,7 +251,11 @@ no_elements:
+- no_pipeline:
+-   {
+-     gst_object_unref (src);
+-+    if (vcrop)
+-+      gst_object_unref (vcrop);
+-     gst_object_unref (csp);
+-+    if (csp2)
+-+      gst_object_unref (csp2);
+-     gst_object_unref (vscale);
+-     gst_object_unref (sink);
+- 
+-@@ -282,7 +328,8 @@ gst_video_convert_sample (GstSample * sample, const GstCaps * to_caps,
+-   }
+- 
+-   pipeline =
+--      build_convert_frame_pipeline (&src, &sink, from_caps, to_caps_copy, &err);
+-+      build_convert_frame_pipeline (&src, &sink, from_caps,
+-+      gst_buffer_get_video_crop_meta (buf), to_caps_copy, &err);
+-   if (!pipeline)
+-     goto no_pipeline;
+- 
+-@@ -646,8 +693,8 @@ gst_video_convert_sample_async (GstSample * sample,
+-   }
+- 
+-   pipeline =
+--      build_convert_frame_pipeline (&src, &sink, from_caps, to_caps_copy,
+--      &error);
+-+      build_convert_frame_pipeline (&src, &sink, from_caps,
+-+      gst_buffer_get_video_crop_meta (buf), to_caps_copy, &error);
+-   if (!pipeline)
+-     goto no_pipeline;
+- 
+--- 
+-2.5.0
+-
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/encodebin-Need-more-buffers-in-output-queue-for-bett.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/encodebin-Need-more-buffers-in-output-queue-for-bett.patch
+index 325671721d..5341e3cfc6 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/encodebin-Need-more-buffers-in-output-queue-for-bett.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/encodebin-Need-more-buffers-in-output-queue-for-bett.patch
+@@ -17,7 +17,7 @@ diff --git a/gst/encoding/gstencodebin.c b/gst/encoding/gstencodebin.c
+ index 6728e58..32daae4 100644
+ --- a/gst/encoding/gstencodebin.c
+ +++ b/gst/encoding/gstencodebin.c
+-@@ -1138,8 +1138,7 @@ _create_stream_group (GstEncodeBin * ebin, GstEncodingProfile * sprof,
++@@ -1228,8 +1228,7 @@ _create_stream_group (GstEncodeBin * ebin, GstEncodingProfile * sprof,
+     * We only use a 1buffer long queue here, the actual queueing will be done
+     * in the input queue */
+    last = sgroup->outqueue = gst_element_factory_make ("queue", NULL);
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/get-caps-from-src-pad-when-query-caps.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/get-caps-from-src-pad-when-query-caps.patch
+index 284abbe94b..c8e6287a55 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/get-caps-from-src-pad-when-query-caps.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/get-caps-from-src-pad-when-query-caps.patch
+@@ -19,7 +19,7 @@ new mode 100755
+ index 9b6c478..ae2294a
+ --- a/gst-libs/gst/tag/gsttagdemux.c
+ +++ b/gst-libs/gst/tag/gsttagdemux.c
+-@@ -1708,6 +1708,19 @@ gst_tag_demux_pad_query (GstPad * pad, GstObject * parent, GstQuery * query)
++@@ -1769,6 +1769,19 @@ gst_tag_demux_pad_query (GstPad * pad, GstObject * parent, GstQuery * query)
+        }
+        break;
+      }
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/make-gio_unix_2_0-dependency-configurable.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/make-gio_unix_2_0-dependency-configurable.patch
+index 01e944ddd8..413eff0695 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/make-gio_unix_2_0-dependency-configurable.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base/make-gio_unix_2_0-dependency-configurable.patch
+@@ -25,8 +25,8 @@ diff --git a/configure.ac b/configure.ac
+ index 9c52aeb..26cacd6 100644
+ --- a/configure.ac
+ +++ b/configure.ac
+-@@ -747,9 +747,16 @@ AC_SUBST(FT2_CFLAGS)
+- AC_SUBST(FT2_LIBS)
++@@ -752,9 +752,16 @@ AC_SUBST(FT2_CFLAGS)
++ fi dnl of EXT plugins
+  
+  dnl *** gio-unix-2.0 for tests/check/pipelines/tcp.c ***
+ +AC_ARG_ENABLE([gio_unix_2_0],
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_1.6.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_1.10.4.bb
+similarity index 54%
+rename from meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_1.6.4.bb
+rename to meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_1.10.4.bb
+index 5e80390f5f..7c81670932 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_1.6.4.bb
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_1.10.4.bb
+@@ -1,25 +1,19 @@
+-include gstreamer1.0-plugins-base.inc
++require gstreamer1.0-plugins-base.inc
+ 
+ LIC_FILES_CHKSUM = "file://COPYING;md5=c54ce9345727175ff66d17b67ff51f58 \
+                     file://COPYING.LIB;md5=6762ed442b3822387a51c92d928ead0d \
+                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
+ 
+-# Note: The dependency on freetype was dropped shortly after the 1.7.1 release
+-# so these lines should be removed during the update to 1.8.x
+-# http://cgit.freedesktop.org/gstreamer/gst-plugins-base/commit/?id=183610c035dd6955c9b3540b940aec50474af031
+-DEPENDS += "freetype"
+-EXTRA_OECONF += "--disable-freetypetest"
+-
+ SRC_URI = " \
+     http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-${PV}.tar.xz \
+     file://get-caps-from-src-pad-when-query-caps.patch \
+     file://0003-ssaparse-enhance-SSA-text-lines-parsing.patch \
+     file://0004-subparse-set-need_segment-after-sink-pad-received-GS.patch \
+     file://encodebin-Need-more-buffers-in-output-queue-for-bett.patch \
+-    file://0005-convertframe-Support-video-crop-when-convert-frame.patch \
++    file://make-gio_unix_2_0-dependency-configurable.patch \
++    file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
+ "
+-
+-SRC_URI[md5sum] = "46aa49cae3d29508f37919817bd1e020"
+-SRC_URI[sha256sum] = "7a193e2a66b0d7411160ef2a373184c8aa3cdeaa576fa270be346716220d9606"
++SRC_URI[md5sum] = "f6b46f8fac01eb773d556e3efc369e86"
++SRC_URI[sha256sum] = "f6d245b6b3d4cb733f81ebb021074c525ece83db0c10e932794b339b8d935eb7"
+ 
+ S = "${WORKDIR}/gst-plugins-base-${PV}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_git.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_git.bb
+deleted file mode 100644
+index 38a9fcc29b..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-base_git.bb
++++ /dev/null
+@@ -1,27 +0,0 @@
+-DEFAULT_PREFERENCE = "-1"
+-
+-include gstreamer1.0-plugins-base.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=c54ce9345727175ff66d17b67ff51f58 \
+-                    file://COPYING.LIB;md5=6762ed442b3822387a51c92d928ead0d \
+-                    file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607"
+-
+-SRC_URI = " \
+-    git://anongit.freedesktop.org/gstreamer/gst-plugins-base;name=base \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;name=common \
+-    file://make-gio_unix_2_0-dependency-configurable.patch \
+-"
+-
+-PV = "1.7.2+git${SRCPV}"
+-
+-UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>(\d+(\.\d+)+))"
+-
+-SRCREV_base = "97e108bebaa58821f4566a74cbf0135e93407c01"
+-SRCREV_common = "b64f03f6090245624608beb5d2fff335e23a01c0"
+-SRCREV_FORMAT = "base"
+-
+-S = "${WORKDIR}/git"
+-
+-do_configure_prepend() {
+-	${S}/autogen.sh --noconfigure
+-}
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good.inc
+index 4621bf8943..14c3d61848 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good.inc
+@@ -8,8 +8,7 @@ inherit gettext
+ 
+ PACKAGECONFIG ??= " \
+     ${GSTREAMER_ORC} \
+-    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
+-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)} \
++    ${@bb.utils.filter('DISTRO_FEATURES', 'pulseaudio x11', d)} \
+     cairo flac gdk-pixbuf gudev jpeg libpng soup speex taglib v4l2 \
+ "
+ 
+@@ -23,12 +22,12 @@ PACKAGECONFIG[gudev]      = "--with-gudev,--without-gudev,libgudev"
+ PACKAGECONFIG[jack]       = "--enable-jack,--disable-jack,jack"
+ PACKAGECONFIG[jpeg]       = "--enable-jpeg,--disable-jpeg,jpeg"
+ PACKAGECONFIG[libpng]     = "--enable-libpng,--disable-libpng,libpng"
+-PACKAGECONFIG[libv4l2]    = "--with-libv4l2,--without-libv4l2,libv4l2"
++PACKAGECONFIG[libv4l2]    = "--with-libv4l2,--without-libv4l2,v4l-utils"
+ PACKAGECONFIG[pulseaudio] = "--enable-pulse,--disable-pulse,pulseaudio"
+ PACKAGECONFIG[soup]       = "--enable-soup,--disable-soup,libsoup-2.4"
+ PACKAGECONFIG[speex]      = "--enable-speex,--disable-speex,speex"
+ PACKAGECONFIG[taglib]     = "--enable-taglib,--disable-taglib,taglib"
+-PACKAGECONFIG[v4l2]       = "--enable-gst_v4l2,--disable-gst_v4l2"
++PACKAGECONFIG[v4l2]       = "--enable-gst_v4l2 --enable-v4l2-probe,--disable-gst_v4l2"
+ PACKAGECONFIG[vpx]        = "--enable-vpx,--disable-vpx,libvpx"
+ PACKAGECONFIG[wavpack]    = "--enable-wavpack,--disable-wavpack,wavpack"
+ PACKAGECONFIG[x11]        = "--enable-x,--disable-x,${X11DEPENDS}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch
+old mode 100755
+new mode 100644
+index d1973d439f..a2cbb70fe9
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch
+@@ -17,7 +17,7 @@ diff --git a/gst/rtp/gstrtpmp4gpay.c b/gst/rtp/gstrtpmp4gpay.c
+ index 7913d9a..1749d39 100644
+ --- a/gst/rtp/gstrtpmp4gpay.c
+ +++ b/gst/rtp/gstrtpmp4gpay.c
+-@@ -390,6 +390,7 @@ gst_rtp_mp4g_pay_setcaps (GstRTPBasePayload * payload, GstCaps * caps)
++@@ -391,6 +391,7 @@ gst_rtp_mp4g_pay_setcaps (GstRTPBasePayload * payload, GstCaps * caps)
+    const GValue *codec_data;
+    const gchar *media_type = NULL;
+    gboolean res;
+@@ -25,7 +25,7 @@ index 7913d9a..1749d39 100644
+  
+    rtpmp4gpay = GST_RTP_MP4G_PAY (payload);
+  
+-@@ -400,7 +401,6 @@ gst_rtp_mp4g_pay_setcaps (GstRTPBasePayload * payload, GstCaps * caps)
++@@ -401,7 +402,6 @@ gst_rtp_mp4g_pay_setcaps (GstRTPBasePayload * payload, GstCaps * caps)
+      GST_LOG_OBJECT (rtpmp4gpay, "got codec_data");
+      if (G_VALUE_TYPE (codec_data) == GST_TYPE_BUFFER) {
+        GstBuffer *buffer;
+@@ -33,7 +33,7 @@ index 7913d9a..1749d39 100644
+  
+        buffer = gst_value_get_buffer (codec_data);
+        GST_LOG_OBJECT (rtpmp4gpay, "configuring codec_data");
+-@@ -426,6 +426,23 @@ gst_rtp_mp4g_pay_setcaps (GstRTPBasePayload * payload, GstCaps * caps)
++@@ -427,6 +427,23 @@ gst_rtp_mp4g_pay_setcaps (GstRTPBasePayload * payload, GstCaps * caps)
+  
+        rtpmp4gpay->config = gst_buffer_copy (buffer);
+      }
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-v4l2object-Also-add-videometa-if-there-is-padding-to.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-v4l2object-Also-add-videometa-if-there-is-padding-to.patch
+new file mode 100644
+index 0000000000..2d8dfb2cac
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good/0001-v4l2object-Also-add-videometa-if-there-is-padding-to.patch
+@@ -0,0 +1,34 @@
++From 22be02612adc757f6a43cefc6ee65ecaef68f0d9 Mon Sep 17 00:00:00 2001
++From: Carlos Rafael Giani <dv@pseudoterminal.org>
++Date: Thu, 23 Mar 2017 22:13:05 +0100
++Subject: [PATCH] v4l2object: Also add videometa if there is padding to the
++ right and bottom
++
++https://bugzilla.gnome.org/show_bug.cgi?id=780478
++
++Upstream-Status: Backport [1.10.5]
++
++Signed-off-by: Carlos Rafael Giani <dv@pseudoterminal.org>
++---
++ sys/v4l2/gstv4l2object.c | 5 +++--
++ 1 file changed, 3 insertions(+), 2 deletions(-)
++
++diff --git a/sys/v4l2/gstv4l2object.c b/sys/v4l2/gstv4l2object.c
++index 91c8ff0..ed4654e 100644
++--- a/sys/v4l2/gstv4l2object.c
+++++ b/sys/v4l2/gstv4l2object.c
++@@ -3070,9 +3070,10 @@ store_info:
++   GST_DEBUG_OBJECT (v4l2object->element, "Got sizeimage %" G_GSIZE_FORMAT,
++       info->size);
++
++-  /* to avoid copies we need video meta if top or left padding */
+++  /* to avoid copies we need video meta if there is padding */
++   v4l2object->need_video_meta =
++-      ((align->padding_top + align->padding_left) != 0);
+++      ((align->padding_top + align->padding_left + align->padding_right +
+++          align->padding_bottom) != 0);
++
++   /* ... or if stride is non "standard" */
++   if (!standard_stride)
++--
++2.7.4
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_1.6.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_1.10.4.bb
+similarity index 54%
+rename from meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_1.6.4.bb
+rename to meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_1.10.4.bb
+index 161f2edc7f..57447bffba 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_1.6.4.bb
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_1.10.4.bb
+@@ -1,4 +1,4 @@
+-include gstreamer1.0-plugins-good.inc
++require gstreamer1.0-plugins-good.inc
+ 
+ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+                     file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607 \
+@@ -7,9 +7,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+ SRC_URI = " \
+     http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-${PV}.tar.xz \
+     file://0001-gstrtpmp4gpay-set-dafault-value-for-MPEG4-without-co.patch \
++    file://avoid-including-sys-poll.h-directly.patch \
++    file://ensure-valid-sentinel-for-gst_structure_get.patch \
++    file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
++    file://0001-v4l2object-Also-add-videometa-if-there-is-padding-to.patch \
+ "
+-
+-SRC_URI[md5sum] = "49faec96efd963483b9b32be10f59841"
+-SRC_URI[sha256sum] = "6915335458d0421d30d2545f85cc4d891d10d48f2be8dc1bd8f45e38b8f64a9c"
++SRC_URI[md5sum] = "cc0cc13cdb07d4237600b6886b81f31d"
++SRC_URI[sha256sum] = "8a86c61434a8c44665365bd0b3557a040937d1f44bf69caee4e9ea816ce74d7e"
+ 
+ S = "${WORKDIR}/gst-plugins-good-${PV}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_git.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_git.bb
+deleted file mode 100644
+index 9cadc9afcf..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-good_git.bb
++++ /dev/null
+@@ -1,28 +0,0 @@
+-DEFAULT_PREFERENCE = "-1"
+-
+-include gstreamer1.0-plugins-good.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+-                    file://common/coverage/coverage-report.pl;beginline=2;endline=17;md5=a4e1830fce078028c8f0974161272607 \
+-                    file://gst/replaygain/rganalysis.c;beginline=1;endline=23;md5=b60ebefd5b2f5a8e0cab6bfee391a5fe"
+-
+-SRC_URI = " \
+-    git://anongit.freedesktop.org/gstreamer/gst-plugins-good;name=base \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;name=common \
+-    file://avoid-including-sys-poll.h-directly.patch \
+-    file://ensure-valid-sentinel-for-gst_structure_get.patch \
+-"
+-
+-PV = "1.7.2+git${SRCPV}"
+-
+-UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>(\d+(\.\d+)+))"
+-
+-SRCREV_base = "1b6fdce67c15d59957e395b1957aa625322092d4"
+-SRCREV_common = "b64f03f6090245624608beb5d2fff335e23a01c0"
+-SRCREV_FORMAT = "base"
+-
+-S = "${WORKDIR}/git"
+-
+-do_configure_prepend() {
+-	${S}/autogen.sh --noconfigure
+-}
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly.inc
+index aff223072d..708ad7a15c 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly.inc
+@@ -9,7 +9,7 @@ inherit gettext
+ 
+ PACKAGECONFIG ??= " \
+     ${GSTREAMER_ORC} \
+-    a52dec lame mad mpeg2dec \
++    a52dec lame mpg123 mpeg2dec \
+ "
+ 
+ PACKAGECONFIG[a52dec]   = "--enable-a52dec,--disable-a52dec,liba52"
+@@ -20,6 +20,7 @@ PACKAGECONFIG[dvdread]  = "--enable-dvdread,--disable-dvdread,libdvdread"
+ PACKAGECONFIG[lame]     = "--enable-lame,--disable-lame,lame"
+ PACKAGECONFIG[mad]      = "--enable-mad,--disable-mad,libmad"
+ PACKAGECONFIG[mpeg2dec] = "--enable-mpeg2dec,--disable-mpeg2dec,mpeg2dec"
++PACKAGECONFIG[mpg123]   = "--enable-mpg123,--disable-mpg123,mpg123"
+ PACKAGECONFIG[x264]     = "--enable-x264,--disable-x264,x264"
+ 
+ EXTRA_OECONF += " \
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_1.6.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_1.10.4.bb
+similarity index 57%
+rename from meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_1.6.4.bb
+rename to meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_1.10.4.bb
+index 7bb71743c6..92a2caa2c2 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_1.6.4.bb
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_1.10.4.bb
+@@ -1,13 +1,13 @@
+-include gstreamer1.0-plugins-ugly.inc
++require gstreamer1.0-plugins-ugly.inc
+ 
+ LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+                     file://tests/check/elements/xingmux.c;beginline=1;endline=21;md5=4c771b8af188724855cb99cadd390068"
+ 
+ SRC_URI = " \
+     http://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-${PV}.tar.xz \
++    file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch \
+ "
+-
+-SRC_URI[md5sum] = "1acdb29ede2e72bed4e7c6714a6aac5c"
+-SRC_URI[sha256sum] = "b470b9bdffb0f81b45a02f2e3c8f42b64acb548d68ad219b7e93296101a4146a"
++SRC_URI[md5sum] = "c68d0509c9980b0b70a4b836ff73fff1"
++SRC_URI[sha256sum] = "6386c77ca8459cba431ed0b63da780c7062c7cc48055d222024d8eaf198ffa59"
+ 
+ S = "${WORKDIR}/gst-plugins-ugly-${PV}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_git.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_git.bb
+deleted file mode 100644
+index 69afe4cfb3..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins-ugly_git.bb
++++ /dev/null
+@@ -1,41 +0,0 @@
+-DEFAULT_PREFERENCE = "-1"
+-
+-include gstreamer1.0-plugins-ugly.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=a6f89e2100d9b6cdffcea4f398e37343 \
+-                    file://tests/check/elements/xingmux.c;beginline=1;endline=21;md5=4c771b8af188724855cb99cadd390068"
+-
+-SRC_URI = " \
+-    git://anongit.freedesktop.org/gstreamer/gst-plugins-ugly;name=base \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;name=common \
+-"
+-
+-PV = "1.7.2+git${SRCPV}"
+-
+-UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>(\d+(\.\d+)+))"
+-
+-SRCREV_base = "8bdb68edbc605e21314b608e7a39bdbaab7302b8"
+-SRCREV_common = "b64f03f6090245624608beb5d2fff335e23a01c0"
+-SRCREV_FORMAT = "base"
+-
+-S = "${WORKDIR}/git"
+-
+-# The mpg123 plugin was added prior to the 1.7.2 release
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-ugly/commit/?id=43bd45ba991ef3247957ca37cdcb52f4b8c0acb1
+-PACKAGECONFIG[mpg123] = "--enable-mpg123,--disable-mpg123,mpg123"
+-
+-do_configure_prepend() {
+-	${S}/autogen.sh --noconfigure
+-}
+-
+-# In 1.7.2, the mpg123 plugin was moved from -bad to -ugly
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-bad/commit/?id=08d8aefcdaaf89ecb6dd53ec1e4f95cd42d01664
+-# https://cgit.freedesktop.org/gstreamer/gst-plugins-ugly/commit/?id=43bd45ba991ef3247957ca37cdcb52f4b8c0acb1
+-
+-PACKAGESPLITFUNCS_append = " handle_mpg123_rename "
+-
+-python handle_mpg123_rename () {
+-    d.setVar('RPROVIDES_gstreamer1.0-plugins-ugly-mpg123', 'gstreamer1.0-plugins-bad-mpg123')
+-    d.setVar('RREPLACES_gstreamer1.0-plugins-ugly-mpg123', 'gstreamer1.0-plugins-bad-mpg123')
+-    d.setVar('RCONFLICTS_gstreamer1.0-plugins-ugly-mpg123', 'gstreamer1.0-plugins-bad-mpg123')
+-}
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins.inc
+index 2dcec509d9..3f6d4c3703 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-plugins.inc
+@@ -5,7 +5,7 @@ SECTION = "multimedia"
+ 
+ DEPENDS = "gstreamer1.0 glib-2.0-native"
+ 
+-inherit autotools pkgconfig upstream-version-is-even gobject-introspection
++inherit autotools pkgconfig upstream-version-is-even gobject-introspection gtk-doc
+ 
+ acpaths = "-I ${S}/common/m4 -I ${S}/m4"
+ 
+@@ -28,13 +28,24 @@ EXTRA_OECONF = " \
+     --disable-examples \
+ "
+ 
+-SRC_URI_append = " file://0001-introspection.m4-prefix-pkgconfig-paths-with-PKG_CON.patch"
+-
+ delete_pkg_m4_file() {
+ 	# This m4 file is out of date and is missing PKG_CONFIG_SYSROOT_PATH tweaks which we need for introspection
+ 	rm "${S}/common/m4/pkg.m4" || true
++	rm -f "${S}/common/m4/gtk-doc.m4"
++}
++
++# gstreamer is not using system-wide makefiles (which we patch in gtkdoc recipe,
++# but its own custom ones, which we have to patch here
++patch_gtk_doc_makefiles() {
++        # Patch the gtk-doc makefiles so that the qemu wrapper is used to run transient binaries
++        # instead of libtool wrapper or running them directly
++        # Also substitute a bogus plugin scanner, as trying to run the real one is causing issues during build on x86_64.
++        sed -i \
++           -e "s|GTKDOC_RUN =.*|GTKDOC_RUN = \$(top_builddir)/gtkdoc-qemuwrapper|" \
++           -e "s|\$(GTKDOC_EXTRA_ENVIRONMENT)|\$(GTKDOC_EXTRA_ENVIRONMENT) GST_PLUGIN_SCANNER_1_0=\$(top_builddir)/libs/gst/helpers/gst-plugin-scanner-dummy|" \
++           ${S}/common/gtk-doc*mak
+ }
+ 
+-do_configure[prefuncs] += " delete_pkg_m4_file"
++do_configure[prefuncs] += " delete_pkg_m4_file patch_gtk_doc_makefiles"
+ 
+ PACKAGES_DYNAMIC = "^${PN}-.*"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server.inc
+index ae6d36477b..7191f9892d 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server.inc
+@@ -3,7 +3,7 @@ HOMEPAGE = "http://cgit.freedesktop.org/gstreamer/gst-rtsp-server/"
+ SECTION = "multimedia"
+ LICENSE = "LGPLv2"
+ 
+-DEPENDS = "gstreamer1.0 libcgroup gstreamer1.0-plugins-base"
++DEPENDS = "gstreamer1.0 libcgroup gstreamer1.0-plugins-base libcheck"
+ 
+ PNREAL = "gst-rtsp-server"
+ 
+@@ -13,12 +13,26 @@ SRC_URI = "http://gstreamer.freedesktop.org/src/${PNREAL}/${PNREAL}-${PV}.tar.xz
+ 
+ S = "${WORKDIR}/${PNREAL}-${PV}"
+ 
+-inherit autotools pkgconfig upstream-version-is-even gobject-introspection
++inherit autotools pkgconfig upstream-version-is-even gobject-introspection gtk-doc
++
++# Starting with 1.8.0 gst-rtsp-server includes dependency-less plugins as well
++LIBV = "1.0"
++require gst-plugins-package.inc
+ 
+ delete_pkg_m4_file() {
+         # This m4 file is out of date and is missing PKG_CONFIG_SYSROOT_PATH tweaks which we need for introspection
+         rm "${S}/common/m4/pkg.m4" || true
+ }
+ 
+-do_configure[prefuncs] += " delete_pkg_m4_file"
++# gstreamer is not using system-wide makefiles (which we patch in gtkdoc recipe,
++# but its own custom ones, which we have to patch here
++patch_gtk_doc_makefiles() {
++        # Patch the gtk-doc makefiles so that the qemu wrapper is used to run transient binaries
++        # instead of libtool wrapper or running them directly
++        sed -i \
++           -e "s|GTKDOC_RUN =.*|GTKDOC_RUN = \$(top_builddir)/gtkdoc-qemuwrapper|" \
++           ${S}/common/gtk-doc*mak
++}
++
++do_configure[prefuncs] += " delete_pkg_m4_file patch_gtk_doc_makefiles"
+ 
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.10.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.10.4.bb
+new file mode 100644
+index 0000000000..6aa9a53cca
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.10.4.bb
+@@ -0,0 +1,6 @@
++require gstreamer1.0-rtsp-server.inc
++
++SRC_URI[md5sum] = "ef587fa6393e09bc26f884510596e305"
++SRC_URI[sha256sum] = "2f6e12fd4e3568ee190dc24e57e4c3a878971c3a3fb6904a9674404fac256de6"
++
++LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.6.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.6.4.bb
+deleted file mode 100644
+index 1725f41124..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0-rtsp-server_1.6.4.bb
++++ /dev/null
+@@ -1,6 +0,0 @@
+-include gstreamer1.0-rtsp-server.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d"
+-
+-SRC_URI[md5sum] = "4734b3c94e9d785cbff884720a8c826f"
+-SRC_URI[sha256sum] = "5270545ff4b59a040e05f543a538b0a59327822895b637022beb4a36cc721672"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi.inc
+new file mode 100644
+index 0000000000..2b6484602b
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi.inc
+@@ -0,0 +1,38 @@
++SUMMARY = "VA-API support to GStreamer"
++DESCRIPTION = "gstreamer-vaapi consists of a collection of VA-API \
++based plugins for GStreamer and helper libraries: `vaapidecode', \
++`vaapiconvert', and `vaapisink'."
++
++REALPN = "gstreamer-vaapi"
++FILESPATH = "${@base_set_filespath(["${FILE_DIRNAME}/${REALPN}", "${FILE_DIRNAME}/${REALPN}"], d)}"
++
++LICENSE = "LGPLv2.1+"
++LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=4fbd65380cdd255951079008b364516c"
++
++DEPENDS = "libva"
++
++SRC_URI = "https://gstreamer.freedesktop.org/src/${REALPN}/${REALPN}-${PV}.tar.xz \
++          "
++
++S = "${WORKDIR}/${REALPN}-${PV}"
++
++inherit autotools pkgconfig gtk-doc distro_features_check upstream-version-is-even
++
++REQUIRED_DISTRO_FEATURES ?= "opengl"
++
++PACKAGES =+ "${PN}-tests"
++
++PACKAGECONFIG ??= "drm \
++                   ${@bb.utils.contains('DISTRO_FEATURES', 'opengl x11', 'glx', '', d)} \
++                   ${@bb.utils.contains('DISTRO_FEATURES', 'wayland', 'wayland', '', d)} \
++                   ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'x11', '', d)}"
++
++PACKAGECONFIG[drm] = "--enable-drm,--disable-drm,udev libdrm"
++PACKAGECONFIG[glx] = "--enable-glx,--disable-glx,virtual/mesa"
++PACKAGECONFIG[wayland] = "--enable-wayland,--disable-wayland,wayland"
++PACKAGECONFIG[x11] = "--enable-x11,--disable-x11,virtual/libx11 libxrandr libxrender"
++
++FILES_${PN} += "${libdir}/gstreamer-*/*.so"
++FILES_${PN}-dbg += "${libdir}/gstreamer-*/.debug"
++FILES_${PN}-dev += "${libdir}/gstreamer-*/*.la ${libdir}/gstreamer-*/*.a"
++FILES_${PN}-tests = "${bindir}/*"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi_1.10.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi_1.10.4.bb
+new file mode 100644
+index 0000000000..44c66de442
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0-vaapi_1.10.4.bb
+@@ -0,0 +1,7 @@
++require gstreamer1.0-vaapi.inc
++SRC_URI[md5sum] = "318af17f906637570b61dd7be9b5581d"
++SRC_URI[sha256sum] = "03e690621594d9f9495d86c7dac8b8590b3a150462770ed070dc76f66a70de75"
++
++SRC_URI += "file://vaapivideobufferpool-create-allocator-if-needed.patch"
++
++DEPENDS += "gstreamer1.0 gstreamer1.0-plugins-base gstreamer1.0-plugins-bad"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0.inc b/meta/recipes-multimedia/gstreamer/gstreamer1.0.inc
+index 10b4668e5f..72d7ce68d0 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0.inc
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0.inc
+@@ -8,7 +8,7 @@ LICENSE = "LGPLv2+"
+ 
+ DEPENDS = "glib-2.0 glib-2.0-native libcap libxml2 bison-native flex-native"
+ 
+-inherit autotools pkgconfig gettext upstream-version-is-even gobject-introspection
++inherit autotools pkgconfig gettext upstream-version-is-even gobject-introspection gtk-doc
+ 
+ # This way common/m4/introspection.m4 will come first
+ # (it has a custom INTROSPECTION_INIT macro, and so must be used instead of our common introspection.m4 file)
+@@ -20,16 +20,16 @@ SRC_URI_append = " \
+ 
+ PACKAGECONFIG ??= ""
+ 
+-PACKAGECONFIG[check] = "--enable-check,--disable-check"
+ PACKAGECONFIG[debug] = "--enable-debug,--disable-debug"
+ PACKAGECONFIG[tests] = "--enable-tests,--disable-tests"
+ PACKAGECONFIG[valgrind] = "--enable-valgrind,--disable-valgrind,valgrind,"
++PACKAGECONFIG[gst-tracer-hooks] = "--enable-gst-tracer-hooks,--disable-gst-tracer-hooks,"
++PACKAGECONFIG[unwind] = "--with-unwind,--without-unwind,libunwind"
+ 
+ EXTRA_OECONF = " \
+     --disable-dependency-tracking \
+     --disable-docbook \
+     --disable-examples \
+-    --disable-gtk-doc \
+ "
+ 
+ CACHED_CONFIGUREVARS += "ac_cv_header_valgrind_valgrind_h=no"
+@@ -49,9 +49,22 @@ RRECOMMENDS_${PN}_qemux86-64 += "kernel-module-snd-ens1370 kernel-module-snd-raw
+ delete_pkg_m4_file() {
+         # This m4 file is out of date and is missing PKG_CONFIG_SYSROOT_PATH tweaks which we need for introspection
+         rm "${S}/common/m4/pkg.m4" || true
++        rm -f "${S}/common/m4/gtk-doc.m4"
+ }
+ 
+-do_configure[prefuncs] += " delete_pkg_m4_file"
++# gstreamer is not using system-wide makefiles (which we patch in gtkdoc recipe,
++# but its own custom ones, which we have to patch here
++patch_gtk_doc_makefiles() {
++        # Patch the gtk-doc makefiles so that the qemu wrapper is used to run transient binaries
++        # instead of libtool wrapper or running them directly
++        # Also substitute a bogus plugin scanner, as trying to run the real one is causing issues during build on x86_64.
++        sed -i \
++           -e "s|GTKDOC_RUN =.*|GTKDOC_RUN = \$(top_builddir)/gtkdoc-qemuwrapper|" \
++           -e "s|\$(GTKDOC_EXTRA_ENVIRONMENT)|\$(GTKDOC_EXTRA_ENVIRONMENT) GST_PLUGIN_SCANNER_1_0=\$(top_builddir)/libs/gst/helpers/gst-plugin-scanner-dummy|" \
++           ${S}/common/gtk-doc*mak
++}
++
++do_configure[prefuncs] += " delete_pkg_m4_file patch_gtk_doc_makefiles"
+ 
+ do_compile_prepend() {
+         export GIR_EXTRA_LIBS_PATH="${B}/gst/.libs:${B}/libs/gst/base/.libs"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0/0001-Fix-crash-with-gst-inspect.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0/0001-Fix-crash-with-gst-inspect.patch
+deleted file mode 100644
+index 94f5cc56e8..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0/0001-Fix-crash-with-gst-inspect.patch
++++ /dev/null
+@@ -1,28 +0,0 @@
+-From 6b26f3dbf9bf577d71534ab7410de66d06e46ba2 Mon Sep 17 00:00:00 2001
+-From: Carlos Rafael Giani <dv@pseudoterminal.org>
+-Date: Sat, 6 Apr 2013 23:52:11 +0200
+-Subject: [PATCH] Fix crash with gst-inspect Chris Lord <chris@openedhand.com>
+-
+-Upstream-Status: Pending
+-
+-Signed-off-by: Carlos Rafael Giani <dv@pseudoterminal.org>
+----
+- tools/gst-inspect.c | 2 +-
+- 1 file changed, 1 insertion(+), 1 deletion(-)
+-
+-diff --git a/tools/gst-inspect.c b/tools/gst-inspect.c
+-index 23b7c44..b79b02e 100644
+---- a/tools/gst-inspect.c
+-+++ b/tools/gst-inspect.c
+-@@ -1556,7 +1556,7 @@ main (int argc, char *argv[])
+-   g_option_context_add_main_entries (ctx, options, GETTEXT_PACKAGE);
+-   g_option_context_add_group (ctx, gst_init_get_option_group ());
+-   if (!g_option_context_parse (ctx, &argc, &argv, &err)) {
+--    g_printerr ("Error initializing: %s\n", err->message);
+-+    g_printerr ("Error initializing: %s\n", err ? err->message : "(null)");
+-     return -1;
+-   }
+-   g_option_context_free (ctx);
+--- 
+-1.8.2
+-
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0/deterministic-unwind.patch b/meta/recipes-multimedia/gstreamer/gstreamer1.0/deterministic-unwind.patch
+new file mode 100644
+index 0000000000..e39e6cad09
+--- /dev/null
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0/deterministic-unwind.patch
+@@ -0,0 +1,24 @@
++Make the detection of libunwind deterministic.
++
++Upstream-Status: Pending
++Signed-off-by: Ross Burton <ross.burton@intel.com>
++
++diff --git a/configure.ac b/configure.ac
++index ac88fb2..182c19a 100644
++--- a/configure.ac
+++++ b/configure.ac
++@@ -829,3 +828,0 @@ AM_CONDITIONAL(HAVE_GTK, test "x$HAVE_GTK" = "xyes")
++-dnl libunwind is optionally used by the leaks tracer
++-PKG_CHECK_MODULES(UNWIND, libunwind, HAVE_UNWIND=yes, HAVE_UNWIND=no)
++-
++@@ -839,3 +836,7 @@ AC_CHECK_FUNC(backtrace, [
++-if test "x$HAVE_UNWIND" = "xyes"; then
++-  AC_DEFINE(HAVE_UNWIND, 1, [libunwind available])
++-fi
+++dnl libunwind is optionally used by the leaks tracer
+++AC_ARG_WITH([unwind],[AS_HELP_STRING([--with-unwind],[use libunwind])],
+++            [], [with_unwind=yes])
+++AS_IF([test "$with_unwind" = yes],
+++      [PKG_CHECK_MODULES(UNWIND, libunwind)
+++       AC_DEFINE(HAVE_UNWIND, 1, [libunwind available])]
+++)
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0_1.6.4.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0_1.10.4.bb
+similarity index 57%
+rename from meta/recipes-multimedia/gstreamer/gstreamer1.0_1.6.4.bb
+rename to meta/recipes-multimedia/gstreamer/gstreamer1.0_1.10.4.bb
+index 58c9059ac0..2a6799345f 100644
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0_1.6.4.bb
++++ b/meta/recipes-multimedia/gstreamer/gstreamer1.0_1.10.4.bb
+@@ -1,14 +1,13 @@
+-include gstreamer1.0.inc
++require gstreamer1.0.inc
+ 
+ LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
+                     file://gst/gst.h;beginline=1;endline=21;md5=e059138481205ee2c6fc1c079c016d0d"
+ 
+ SRC_URI = " \
+     http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz \
+-    file://0001-Fix-crash-with-gst-inspect.patch \
++    file://deterministic-unwind.patch \
+ "
+-
+-SRC_URI[md5sum] = "fb2fbf42db73ef736bdf39f50d63dd66"
+-SRC_URI[sha256sum] = "4ccba88a286b13d6f2d8c1180f78a13dcd49f2fc3cb2b3b3f502b3a23f7c01b5"
++SRC_URI[md5sum] = "7c91a97e4a2dc81eafd59d0a2f8b0d6e"
++SRC_URI[sha256sum] = "50c2f5af50a6cc6c0a3f3ed43bdd8b5e2bff00bacfb766d4be139ec06d8b5218"
+ 
+ S = "${WORKDIR}/gstreamer-${PV}"
+diff --git a/meta/recipes-multimedia/gstreamer/gstreamer1.0_git.bb b/meta/recipes-multimedia/gstreamer/gstreamer1.0_git.bb
+deleted file mode 100644
+index 7715bb202e..0000000000
+--- a/meta/recipes-multimedia/gstreamer/gstreamer1.0_git.bb
++++ /dev/null
+@@ -1,30 +0,0 @@
+-DEFAULT_PREFERENCE = "-1"
+-
+-include gstreamer1.0.inc
+-
+-LIC_FILES_CHKSUM = "file://COPYING;md5=6762ed442b3822387a51c92d928ead0d \
+-                    file://gst/gst.h;beginline=1;endline=21;md5=e059138481205ee2c6fc1c079c016d0d"
+-
+-SRC_URI = " \
+-    git://anongit.freedesktop.org/gstreamer/gstreamer;name=base \
+-    git://anongit.freedesktop.org/gstreamer/common;destsuffix=git/common;name=common \
+-"
+-
+-PV = "1.7.2+git${SRCPV}"
+-
+-UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>(\d+(\.\d+)+))"
+-
+-SRCREV_base = "9e33bfa2c7a5f43da2c49b0a8235fd43cba9feaf"
+-SRCREV_common = "b64f03f6090245624608beb5d2fff335e23a01c0"
+-SRCREV_FORMAT = "base"
+-
+-S = "${WORKDIR}/git"
+-
+-# The option to configure tracer hooks was added prior to the 1.7.2 release
+-# https://cgit.freedesktop.org/gstreamer/gstreamer/commit/?id=e5ca47236e4df4683707f0bcf99181a937d358d5
+-PACKAGECONFIG[gst-tracer-hooks] = "--enable-gst-tracer-hooks,--disable-gst-tracer-hooks,"
+-PACKAGECONFIG[trace-historic] = "--enable-trace,--disable-trace,"
+-
+-do_configure_prepend() {
+-	${S}/autogen.sh --noconfigure
+-}
+-- 
+2.17.1
+

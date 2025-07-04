@@ -1,7 +1,7 @@
-diff -Naur gst-plugins-good-1.6.4.orig/ext/soup/gstsouphttpsrc.c gst-plugins-good-1.6.4/ext/soup/gstsouphttpsrc.c
---- gst-plugins-good-1.6.4.orig/ext/soup/gstsouphttpsrc.c	2022-01-15 00:09:36.000000000 +0100
-+++ gst-plugins-good-1.6.4/ext/soup/gstsouphttpsrc.c	2022-01-15 00:15:03.262796972 +0100
-@@ -966,11 +966,7 @@
+diff -Naur gst-plugins-good-1.10.4.orig/ext/soup/gstsouphttpsrc.c gst-plugins-good-1.10.4/ext/soup/gstsouphttpsrc.c
+--- gst-plugins-good-1.10.4.orig/ext/soup/gstsouphttpsrc.c	2017-02-22 15:20:59.000000000 +0100
++++ gst-plugins-good-1.10.4/ext/soup/gstsouphttpsrc.c	2022-01-14 23:51:23.890829846 +0100
+@@ -937,11 +937,7 @@
      GST_DEBUG_OBJECT (src, "Re-using session");
    }
  
@@ -14,16 +14,15 @@ diff -Naur gst-plugins-good-1.6.4.orig/ext/soup/gstsouphttpsrc.c gst-plugins-goo
  
    return TRUE;
  }
-@@ -1649,6 +1645,12 @@
-           *cookie);
+@@ -1419,6 +1415,11 @@
      }
    }
-+
+ 
 +  if (!src->compress) {
 +    soup_message_headers_append (src->msg->request_headers, "Accept-Encoding",
 +        "identity");
 +  }
 +
-   src->retry = FALSE;
+   soup_message_set_flags (src->msg, SOUP_MESSAGE_OVERWRITE_CHUNKS |
+       (src->automatic_redirect ? 0 : SOUP_MESSAGE_NO_REDIRECT));
  
-   g_signal_connect (src->msg, "got_headers",
