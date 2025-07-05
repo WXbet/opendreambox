@@ -245,8 +245,7 @@ update:
 		for d in patches/*/; do \
 			if [ -e "$$d" ]; then \
 				cd $$(basename "$$d"); \
-				echo "[*] Patching $$(basename "$$PWD")..."; \
-				git am --ignore-whitespace ../$$d*.patch; \
+				git am ../$$d*.patch; \
 				cd ..; \
 			fi; \
 		done; \
