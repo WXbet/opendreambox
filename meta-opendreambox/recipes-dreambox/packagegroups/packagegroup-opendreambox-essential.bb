@@ -22,4 +22,5 @@ RRECOMMENDS_${PN} = " \
         kernel-module-sr-mod \
         kernel-module-stv0299 \
         kernel-module-usbhid \
+        ${@bb.utils.contains_any('MACHINE', 'dm900 dm920 dreamone dreamtwo', 'kernel-module-wireguard', '', d)} \
 "

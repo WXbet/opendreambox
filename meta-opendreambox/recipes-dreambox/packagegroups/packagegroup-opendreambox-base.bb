@@ -16,7 +16,6 @@ RDEPENDS_${PN} += " \
   xfsprogs-mkfs \
   libssl3 \
   libusb1 \
-  ${@base_version_less_or_equal('OLDEST_KERNEL', '3.9', '', 'wireguard-tools', d)} \
 "
 
 RRECOMMENDS_${PN} += " \
@@ -37,5 +36,6 @@ RRECOMMENDS_${PN} += " \
   nano \
   samba-base \
   vsftpd \
+  ${@bb.utils.contains_any('MACHINE', 'dm900 dm920 dreamone dreamtwo', 'wireguard-tools', '', d)} \
   zeroconf \
 "
