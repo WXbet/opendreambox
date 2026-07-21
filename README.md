@@ -4,7 +4,7 @@ Python: **2.7.17** + **3.6.9**
 
 Working with latest Ubuntu 18.04.6 LTS and the following packages:
 ```
-sudo apt-get install git build-essential diffstat texi2html texinfo subversion chrpath cvs gawk gettext-lint autopoint gcc-multilib gcc-6 g++-6 gcc-6-multilib file help2man python3-distutils
+sudo apt-get install git build-essential diffstat texi2html texinfo subversion chrpath cvs gawk gettext-lint autopoint gcc-multilib gcc-6 g++-6 gcc-6-multilib file help2man python3-distutils libperl4-corelibs-perl
 ```
 
 Set gcc-6 as default compiler:
